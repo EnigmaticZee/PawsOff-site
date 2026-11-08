@@ -6,7 +6,7 @@
 # marked "downloaded from the internet", so macOS opens the app without asking first.
 set -euo pipefail
 
-URL="https://github.com/EnigmaticZee/PawsOff/releases/latest/download/PawsOff-mac.dmg"
+URL="https://github.com/EnigmaticZee/PawsOff-site/releases/latest/download/PawsOff-mac.dmg"
 APP="Paws Off.app"
 
 major=$(sw_vers -productVersion | cut -d. -f1)

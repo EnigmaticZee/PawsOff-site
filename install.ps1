@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-$url = 'https://github.com/EnigmaticZee/PawsOff/releases/latest/download/PawsOff-Windows-Setup.exe'
+$url = 'https://github.com/EnigmaticZee/PawsOff-site/releases/latest/download/PawsOff-Windows-Setup.exe'
 $setup = Join-Path $env:TEMP 'PawsOff-Setup.exe'
 
 Write-Host 'Downloading Paws Off...'
