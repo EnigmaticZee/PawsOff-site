@@ -1,0 +1,3 @@
+# Paws Off: cancelled licence keys (refunds), one key number per line.
+# Paws Off downloads this list once a week. It holds numbers only: no keys, no names.
+2  # test key, for checking the "This key was cancelled" screen
