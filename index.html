@@ -4,392 +4,844 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Paws Off: pause your keyboard with one click</title>
-<meta name="description" content="Free for Mac and Windows. Wipe your keyboard without typing gibberish, or step away without your cat writing your emails.">
+<meta name="description" content="Pause your keyboard with one click, for Mac and Windows. Wipe it down without typing gibberish, or step away without your cat writing your emails. $5.99, once.">
 <meta property="og:title" content="Paws Off">
-<meta property="og:description" content="Pause your keyboard with one click. Free for Mac and Windows.">
+<meta property="og:description" content="Pause your keyboard with one click. For Mac and Windows. $5.99, once.">
 <meta property="og:image" content="https://enigmaticzee.github.io/PawsOff-site/og.png">
 <meta property="og:url" content="https://enigmaticzee.github.io/PawsOff-site/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="images/icon.png">
 <style>
   :root {
-    --bg: #f7f4ef; --surface: #ffffff; --ink: #2a2621; --soft: #6f675d; --line: rgba(42, 38, 33, .09);
-    --coral: #e8573f; --coral-soft: rgba(244, 110, 88, .12); --code: #2a2621; --code-ink: #f3ece1;
+    --bg: #f6f2ec; --surface: #ffffff; --ink: #2a2621; --soft: #6f675d; --faint: #9a9186; --line: rgba(42, 38, 33, .09);
+    --coral: #e8573f; --coral-ui: #e8704f; --coral-soft: rgba(232, 112, 79, .12); --teal: #2aa68f; --teal-soft: rgba(42, 166, 143, .12);
+    --shadow: 0 30px 70px -30px rgba(60, 40, 20, .35);
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #161412; --surface: #221f1b; --ink: #f3ece1; --soft: #a69d90; --line: rgba(255, 255, 255, .1);
-      --coral: #ff8a72; --coral-soft: rgba(255, 138, 114, .14); --code: #0f0d0b; --code-ink: #f3ece1; }
+    :root { --bg: #151311; --surface: #211e1a; --ink: #f3ece1; --soft: #a69d90; --faint: #7d756b; --line: rgba(255, 255, 255, .09);
+      --coral: #ff8a72; --coral-ui: #ff8a5c; --coral-soft: rgba(255, 138, 92, .14); --teal: #4fd6b8; --teal-soft: rgba(79, 214, 184, .13);
+      --shadow: 0 30px 70px -30px rgba(0, 0, 0, .8); }
   }
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
-  h1, h2, h3, .brand { font-family: ui-rounded, "SF Pro Rounded", -apple-system, "Segoe UI", system-ui, sans-serif; letter-spacing: -.01em; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; overflow-x: hidden; }
+  h1, h2, h3, .brand, .price-big { font-family: ui-rounded, "SF Pro Rounded", -apple-system, "Segoe UI", system-ui, sans-serif; letter-spacing: -.015em; }
   a { color: var(--coral); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  svg.i { width: 1em; height: 1em; flex: none; }
 
-  nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; color: var(--ink); }
-  .brand img { width: 30px; height: 30px; }
-  nav a.navdl { color: var(--soft); font-weight: 600; font-size: 15px; }
+  /* Top bar */
+  .top { position: sticky; top: 0; z-index: 30; backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid transparent; transition: border-color .3s; }
+  .top.scrolled { border-bottom-color: var(--line); }
+  nav { display: flex; align-items: center; gap: 26px; height: 62px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--ink); }
+  .brand img { width: 28px; height: 28px; }
+  .brand:hover { text-decoration: none; }
+  nav .links { display: flex; gap: 22px; margin-right: auto; }
+  nav .links a { color: var(--soft); font-size: 15px; font-weight: 600; }
+  nav .links a:hover { color: var(--ink); text-decoration: none; }
 
-  header { text-align: center; padding: 48px 0 28px; }
-  header img.icon { width: 120px; height: 120px; }
-  h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.04; font-weight: 900; margin: 18px 0 14px; }
-  .lede { font-size: clamp(17px, 2.2vw, 21px); color: var(--soft); max-width: 620px; margin: 0 auto; }
+  /* The buy button, before checkout opens */
+  .buy { position: relative; display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 8px 0 20px; border-radius: 999px; border: 0;
+    background: var(--ink); color: var(--bg); font: 700 16px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; cursor: default;
+    box-shadow: 0 10px 24px -12px rgba(42, 38, 33, .6); }
+  .buy .soon { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px; border-radius: 999px; background: rgba(255, 255, 255, .14);
+    font-size: 12.5px; font-weight: 800; letter-spacing: .02em; }
+  @media (prefers-color-scheme: dark) { .buy .soon { background: rgba(0, 0, 0, .1); } }
+  .buy .soon i { width: 7px; height: 7px; border-radius: 50%; background: var(--coral-ui); animation: pulse 2.2s ease-in-out infinite; }
+  .buy.small { height: 38px; font-size: 14px; padding-left: 15px; padding-right: 5px; }
+  .buy.small .soon { height: 28px; font-size: 11.5px; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.75); } }
+  .ghost { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 20px; border-radius: 999px; background: var(--surface);
+    border: 1px solid var(--line); color: var(--ink); font-weight: 700; font-size: 16px; }
+  .ghost:hover { text-decoration: none; border-color: color-mix(in srgb, var(--ink) 25%, transparent); }
 
-  .install { max-width: 640px; margin: 34px auto 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; text-align: left; }
-  .tabs { display: flex; gap: 6px; background: var(--line); padding: 4px; border-radius: 999px; width: max-content; max-width: 100%; margin: 0 auto 16px; }
-  .tabs button { border: 0; background: none; color: var(--soft); font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1; padding: 9px 16px; border-radius: 999px; cursor: pointer; }
-  .tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .12); }
-  .panel[hidden] { display: none; }
-  .cmd { display: flex; align-items: center; gap: 12px; background: var(--code); color: var(--code-ink); border-radius: 12px; padding: 12px 12px 12px 16px; }
-  /* One line that scrolls sideways; the padding keeps the scrollbar below the text, never over it. */
-  .cmd code { flex: 1; min-width: 0; font: 14px/1.5 ui-monospace, Menlo, Consolas, monospace; white-space: nowrap; overflow-x: auto; padding: 6px 0 12px; margin-bottom: -6px; user-select: all;
-    scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .28) transparent; }
-  .cmd code::-webkit-scrollbar { height: 6px; }
-  .cmd code::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .28); border-radius: 3px; }
-  .cmd button { flex: none; align-self: center; border: 0; border-radius: 8px; background: var(--coral); color: #fff; font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1; padding: 10px 14px; cursor: pointer; min-height: 36px; }
-  .cmd button:hover { filter: brightness(1.06); }
-  .hint { color: var(--soft); font-size: 14px; margin: 12px 4px 0; }
-  .meta { color: var(--soft); font-size: 14px; margin-top: 14px; text-align: center; }
-  .downloads { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }
-  .dl { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border-radius: 14px; font-weight: 800; font-size: 16px;
-    background: #2A2621; color: #FFFFFF; box-shadow: 0 6px 18px rgba(42, 38, 33, .18); transition: transform .15s ease, box-shadow .15s ease; }
-  .dl.win { background: #0B63C9; box-shadow: 0 6px 18px rgba(11, 99, 201, .25); }
-  .dl:hover { text-decoration: none; transform: translateY(-1px); box-shadow: 0 10px 24px rgba(42, 38, 33, .24); }
-  .dl svg { width: 20px; height: 20px; fill: #FFFFFF; flex: none; }
-  .dl small { color: rgba(255, 255, 255, .7); font-weight: 600; }
-  @media (prefers-color-scheme: dark) { .dl { background: #F3ECE1; color: #2A2621; } .dl svg { fill: #2A2621; } .dl small { color: rgba(42, 38, 33, .6); } .dl.win { background: #0B63C9; color: #fff; } .dl.win svg { fill: #fff; } .dl.win small { color: rgba(255, 255, 255, .75); } }
-  .or { color: var(--soft); font-size: 14px; margin-top: 22px; text-align: center; }
-  .trust { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 16px 0 0; color: var(--soft); font-size: 15px; }
-  .trust svg { width: 18px; height: 18px; color: var(--coral); flex: none; }
-  .trust strong { color: var(--ink); }
-  .trust + .hint { margin-top: 4px; }
+  /* Hero */
+  header.hero { text-align: center; padding: 56px 0 30px; }
+  .hero .icon { width: 108px; height: 108px; filter: drop-shadow(0 18px 24px rgba(60, 40, 20, .18)); animation: float 6s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  h1 { font-size: clamp(38px, 6.4vw, 66px); line-height: 1.02; font-weight: 900; margin: 18px 0 16px; }
+  h1 .hl { color: var(--coral); background: linear-gradient(transparent 64%, var(--coral-soft) 64%); padding: 0 .06em; }
+  .facts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; list-style: none; padding: 0; margin: 20px 0 0; color: var(--soft); font-size: 14.5px; font-weight: 600; }
+  .facts li { display: inline-flex; align-items: center; gap: 7px; }
+  .facts svg { width: 16px; height: 16px; color: var(--coral); }
+  .lede { font-size: clamp(17px, 2.2vw, 21px); color: var(--soft); max-width: 640px; margin: 0 auto; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 30px; }
+  .fine { color: var(--soft); font-size: 14px; margin-top: 16px; }
 
-  .hero { margin: 36px auto 0; }
+  /* Try it: the real panel, next to a keyboard that's yours */
+  .try { padding: 64px 0 0; }
+  .try-head { text-align: center; margin-bottom: 26px; }
+  .try-head p { color: var(--soft); max-width: 620px; margin: 0 auto; font-size: 17px; line-height: 1.75; }
+  kbd.uw { display: inline-block; padding: 1px 9px 2px; margin: 0 2px; border-radius: 8px; font: 800 15px/1.5 ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+    color: var(--teal); background: var(--teal-soft); border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent); box-shadow: 0 2px 0 color-mix(in srgb, var(--teal) 30%, transparent); }
+  .desk { position: relative; display: flex; gap: 40px; align-items: center; justify-content: center; padding: 40px 44px; border-radius: 30px;
+    background: radial-gradient(90% 120% at 15% 0%, #fbf5ec 0%, transparent 60%), linear-gradient(180deg, #eee5d9, #e5dacc);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 0 0 1px var(--line); }
+  @media (prefers-color-scheme: dark) {
+    .desk { background: radial-gradient(90% 120% at 15% 0%, #2b2723 0%, transparent 60%), linear-gradient(180deg, #1d1a17, #131110);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 0 0 1px var(--line); }
+  }
+  .board { flex: 1; min-width: 0; max-width: 620px; }
+  .field { position: relative; background: #fffdfa; border-radius: 16px; padding: 12px 16px 6px; margin-bottom: 20px;
+    box-shadow: 0 12px 26px -16px rgba(60, 40, 20, .4), 0 0 0 1px rgba(42, 38, 33, .08); }
+  @media (prefers-color-scheme: dark) { .field { background: #25221f; box-shadow: 0 12px 26px -16px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .07); } }
+  .field .lbl { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12.5px; font-weight: 700; color: var(--faint); }
+  .field .held { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 99px; background: var(--teal-soft); color: var(--teal); opacity: 0;
+    transform: translateY(-3px); transition: opacity .25s, transform .25s; }
+  .field .held svg { width: 12px; height: 12px; }
+  .desk.paw .field .held { background: var(--coral-soft); color: var(--coral); }
+  .desk.locked .field .held { opacity: 1; transform: none; }
+  .field textarea { display: block; width: 100%; height: 72px; border: 0; outline: none; resize: none; background: transparent; color: var(--ink); padding: 6px 0;
+    font: 17px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  .field textarea::placeholder { color: var(--faint); }
+  .kb { position: relative; padding: 12px; border-radius: 20px; user-select: none; -webkit-user-select: none;
+    --ka: #fffdf9; --kz: #f0e9de; --kborder: #ddd2c2; --kside: #cfc3b0; --klegend: #857b70;
+    background: linear-gradient(#ddd3c5, #d1c5b5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), 0 22px 34px -20px rgba(60, 40, 20, .55);
+    transition: box-shadow .3s; }
+  @media (prefers-color-scheme: dark) {
+    .kb { --ka: #3a3632; --kz: #2a2724; --kborder: #0f0e0c; --kside: #0a0908; --klegend: #a2988b;
+      background: linear-gradient(#100f0d, #0b0a09); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 22px 34px -20px rgba(0, 0, 0, .8); }
+  }
+  .desk.locked .kb { box-shadow: 0 0 0 2px var(--teal), 0 0 26px -4px var(--teal), 0 22px 34px -20px rgba(60, 40, 20, .55); }
+  .desk.paw .kb { box-shadow: 0 0 0 2px var(--coral-ui), 0 0 26px -4px var(--coral-ui), 0 22px 34px -20px rgba(60, 40, 20, .55); }
+  .kb .r { display: flex; gap: 6px; }
+  .kb .r + .r { margin-top: 6px; }
+  .k { flex: 1 1 0; min-width: 0; height: 40px; border-radius: 9px; border: 1px solid var(--kborder); background: linear-gradient(var(--ka), var(--kz)); color: var(--klegend);
+    box-shadow: 0 3px 0 var(--kside), 0 5px 8px -5px rgba(0, 0, 0, .3); display: grid; place-items: center; cursor: pointer;
+    font: 700 13px/1 ui-rounded, "SF Pro Rounded", -apple-system, "Segoe UI", system-ui, sans-serif; transition: transform .07s, box-shadow .07s, background .15s, color .15s; }
+  .k.down { transform: translateY(2.5px); box-shadow: 0 .5px 0 var(--kside), 0 1px 3px -1px rgba(0, 0, 0, .25); }
+  .desk.locked .k.down { background: var(--teal-soft); color: var(--teal); }
+  .desk.paw .k.down { background: var(--coral-soft); color: var(--coral); }
+  .kb .walk { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+  .kb .walk svg { position: absolute; width: 38px; height: 38px; color: #3a2a20; opacity: 0; transform: scale(.4) rotate(var(--r, 0deg)); transition: opacity .2s, transform .25s; }
+  @media (prefers-color-scheme: dark) { .kb .walk svg { color: #f0e3d4; } }
+  .kb .walk svg.on { opacity: .6; transform: scale(1) rotate(var(--r, 0deg)); }
+  .bounce { position: absolute; z-index: 4; pointer-events: none; font: 800 16px/1 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; color: var(--teal); animation: hop .8s ease-out forwards; }
+  .desk.paw .bounce { color: var(--coral-ui); }
+  @keyframes hop { 0% { opacity: 0; transform: translateY(0) scale(.8); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-34px) scale(1.05); } }
+  .bounce s { text-decoration-thickness: 2px; }
+  .try-under { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 20px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chip { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 15px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+    color: var(--ink); font: 600 14px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; cursor: pointer; transition: transform .15s, border-color .2s; }
+  .chip:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--ink) 25%, transparent); }
+  .chip svg { width: 16px; height: 16px; color: var(--coral); }
+  .chip kbd { font: inherit; font-weight: 800; letter-spacing: .04em; }
+  .try-note { text-align: center; color: var(--soft); font-size: 14px; margin: 0; }
 
-  /* Paw detection spotlight */
-  .paws { position: relative; display: grid; grid-template-columns: 1.1fr 1fr; gap: 24px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 28px; padding: 44px; overflow: hidden; }
-  .paws .trail { position: absolute; inset: 0; pointer-events: none; color: var(--coral); opacity: .14; }
-  .paws .copy { position: relative; }
-  .eyebrow { display: flex; align-items: center; gap: 8px; color: var(--coral); font-size: 14px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-  .paws h2 { text-align: left; margin: 12px 0 12px; line-height: 1.08; }
-  .paws p { color: var(--soft); margin: 0 0 22px; }
-  .draft { position: relative; background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; max-width: 440px; }
+  /* The Paws Off panel */
+  .panel { position: relative; width: 320px; height: 430px; flex: none; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; align-items: center;
+    text-align: center; color: var(--p-ink); font-family: ui-rounded, "SF Pro Rounded", -apple-system, "Segoe UI", system-ui, sans-serif;
+    box-shadow: 0 30px 60px -22px rgba(30, 20, 10, .45), 0 0 0 1px rgba(42, 38, 33, .1);
+    --p-a: #f2ede4; --p-b: #ece5da; --y-a: #e6f3ee; --y-b: #d9ebe4; --w-a: #f4eaea; --w-b: #eddede; --p-ink: #2a2621; --p-soft: rgba(42, 38, 33, .62);
+    --p-line: rgba(42, 38, 33, .1); --chip: rgba(255, 255, 255, .6); --top-a: #fffdf9; --top-b: #f0e9de; --dish-a: #f5efe6; --dish-b: #fbf8f2;
+    --kb: #ddd2c2; --side: #cfc3b0; --leg: #a0958a; --kshadow: rgba(60, 40, 20, .35); --p-teal: #2aa68f; --p-coral: #e8704f; }
+  @media (prefers-color-scheme: dark) {
+    .panel { --p-a: #2d2a26; --p-b: #171513; --y-a: #1f3833; --y-b: #111a18; --w-a: #38272a; --w-b: #191112; --p-ink: #f3ece1; --p-soft: rgba(243, 236, 225, .62);
+      --p-line: rgba(255, 255, 255, .09); --chip: rgba(255, 255, 255, .06); --top-a: #3a3632; --top-b: #2a2724; --dish-a: #2c2926; --dish-b: #34312d;
+      --kb: #0f0e0c; --side: #0a0908; --leg: #8d8376; --kshadow: rgba(0, 0, 0, .6); --p-teal: #4fd6b8; --p-coral: #ff8a5c;
+      box-shadow: 0 30px 60px -22px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .08); }
+  }
+  .panel .bg { position: absolute; inset: 0; transition: opacity .5s ease; }
+  .panel .b-rest { background: linear-gradient(var(--p-a), var(--p-b)); }
+  .panel .b-you { background: linear-gradient(var(--y-a), var(--y-b)); opacity: 0; }
+  .panel .b-paw { background: linear-gradient(var(--w-a), var(--w-b)); opacity: 0; }
+  @media (prefers-color-scheme: dark) {
+    .panel .b-rest { background: radial-gradient(120% 80% at 50% 30%, var(--p-a), var(--p-b)); }
+    .panel .b-you { background: radial-gradient(120% 80% at 50% 30%, var(--y-a), var(--y-b)); }
+    .panel .b-paw { background: radial-gradient(120% 80% at 50% 30%, var(--w-a), var(--w-b)); }
+  }
+  .desk.locked:not(.paw) .panel .b-you, .desk.paw .panel .b-paw { opacity: 1; }
+  .panel > :not(.bg) { position: relative; }
+  .panel svg { width: 14px; height: 14px; flex: none; }
+  .p-chip { margin-top: 16px; height: 30px; padding: 0 13px; display: inline-flex; align-items: center; gap: 7px; border-radius: 99px; border: 1px solid var(--p-line);
+    background: var(--chip); color: var(--p-ink); font: 700 12px/1 inherit; font-family: inherit; cursor: pointer; }
+  .p-chip:disabled { cursor: default; }
+  .p-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--p-coral); box-shadow: inset 0 0 0 1.5px var(--p-coral); }
+  .p-chip.off .dot { background: transparent; box-shadow: inset 0 0 0 1.5px var(--p-soft); }
+  .p-chip.off { color: var(--p-soft); }
+  .p-chip .lk, .p-chip .pw { display: none; width: 12px; height: 12px; }
+  .p-chip .lk { color: var(--p-teal); } .p-chip .pw { color: var(--p-coral); }
+  .desk.locked .p-chip .dot { display: none; }
+  .desk.locked:not(.paw) .p-chip .lk, .desk.paw .p-chip .pw { display: block; }
+  .p-stage { position: relative; width: 100%; height: 196px; margin-top: 6px; display: grid; place-items: center; }
+  .p-key { position: relative; width: 150px; height: 150px; border-radius: 34px; border: 1px solid var(--kb); background: linear-gradient(var(--top-a), var(--top-b)); padding: 0; cursor: pointer;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .5), 0 11px 0 var(--side), 0 24px 30px -6px var(--kshadow); transform: translateY(-6px); color: var(--p-ink);
+    transition: transform .25s cubic-bezier(.2, .8, .3, 1), box-shadow .25s cubic-bezier(.2, .8, .3, 1); display: grid; place-items: center; }
+  @media (prefers-color-scheme: dark) { .p-key { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 11px 0 var(--side), 0 24px 30px -6px var(--kshadow); } }
+  .p-key:hover { transform: translateY(-7px) scale(1.02); }
+  .p-key::after { content: ""; position: absolute; inset: 14px; border-radius: 24px; background: linear-gradient(var(--dish-a), var(--dish-b)); box-shadow: inset 0 1px 3px rgba(0, 0, 0, .14); }
+  .desk.locked .p-key, .p-key:active { transform: translateY(4px); box-shadow: inset 0 2px 0 rgba(255, 255, 255, .4), 0 2px 0 var(--side), 0 8px 14px -4px var(--kshadow); }
+  .p-leg { position: absolute; left: 26px; top: 23px; z-index: 1; font-size: 9.5px; font-weight: 900; letter-spacing: .14em; color: var(--leg); }
+  .p-led { position: absolute; right: 27px; top: 26px; z-index: 1; width: 8px; height: 8px; border-radius: 50%; opacity: 0; transition: opacity .3s; }
+  .desk.locked:not(.paw) .p-led { opacity: 1; background: var(--p-teal); box-shadow: 0 0 8px var(--p-teal); }
+  .desk.paw .p-led { opacity: 1; background: var(--p-coral); box-shadow: 0 0 8px var(--p-coral); }
+  .p-key .sym { position: relative; z-index: 1; width: 46px; height: 46px; transition: color .3s; }
+  .p-key .s-lock { display: none; }
+  .desk.locked:not(.paw) .p-key .s-paw { display: none; }
+  .desk.locked:not(.paw) .p-key .s-lock { display: block; color: var(--p-teal); filter: drop-shadow(0 0 9px var(--p-teal)); }
+  .desk.paw .p-key .s-paw { color: var(--p-coral); filter: drop-shadow(0 0 9px var(--p-coral)); }
+  .p-title { margin: 2px 0 0; font-size: 20px; font-weight: 800; }
+  .p-sub { margin: 3px 0 0; max-width: 266px; font-size: 12px; line-height: 1.42; color: var(--p-soft); min-height: 51px; }
+  .p-row { margin-top: 8px; height: 30px; display: flex; align-items: center; gap: 6px; position: relative; }
+  .p-row > svg { color: var(--p-soft); }
+  .p-pill { height: 28px; padding: 0 12px; border-radius: 99px; display: inline-flex; align-items: center; gap: 5px; font: 700 12px/1 inherit; font-family: inherit;
+    color: var(--p-ink); background: linear-gradient(var(--top-a), var(--top-b)); border: 1px solid var(--kb); box-shadow: 0 2px 0 var(--side); cursor: pointer; }
+  .p-pill:active { transform: translateY(1.5px); box-shadow: 0 .5px 0 var(--side); }
+  .p-info { display: none; height: 28px; padding: 0 12px; border-radius: 99px; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+    background: var(--chip); border: 1px solid var(--p-line); font-variant-numeric: tabular-nums; }
+  .desk.locked .p-row > svg, .desk.locked .p-pill { display: none; }
+  .desk.locked .p-info { display: inline-flex; }
+  .p-menu { position: absolute; bottom: 34px; left: 50%; transform: translateX(-42%); z-index: 6; min-width: 168px; padding: 5px; border-radius: 10px; text-align: left;
+    background: color-mix(in srgb, var(--p-a) 92%, white); border: 1px solid var(--p-line); box-shadow: 0 14px 30px -10px rgba(0, 0, 0, .35); display: none; }
+  @media (prefers-color-scheme: dark) { .p-menu { background: #2b2825; } }
+  .p-menu.open { display: block; }
+  .p-menu button { display: flex; width: 100%; align-items: center; gap: 8px; border: 0; background: none; padding: 6px 9px; border-radius: 6px; color: var(--p-ink);
+    font: 600 12.5px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; cursor: pointer; }
+  .p-menu button:hover { background: var(--p-coral); color: #fff; }
+  .p-menu button .ck { width: 12px; visibility: hidden; }
+  .p-menu button.sel .ck { visibility: visible; }
+  .p-foot { margin-top: auto; width: 100%; height: 44px; border-top: 1px solid var(--p-line); display: flex; align-items: center; gap: 6px; padding: 0 16px;
+    font-size: 11.5px; font-weight: 600; color: var(--p-soft); }
+  .p-foot .ft { flex: 1; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .p-foot .fp { color: var(--p-coral); }
+
+  /* Sections */
+  section { padding: 96px 0 0; }
+  h2 { font-size: clamp(30px, 4.2vw, 44px); font-weight: 900; line-height: 1.06; margin: 0 0 12px; }
+  .center { text-align: center; }
+  .sub { color: var(--soft); margin: 0 auto 34px; max-width: 580px; font-size: 18px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; color: var(--coral); font-size: 13px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 12px; }
+  .eyebrow svg { width: 16px; height: 16px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .row.flip > :first-child { order: 2; }
+  .row p { color: var(--soft); font-size: 17px; margin: 0 0 14px; }
+  .vis { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 26px; min-height: 340px; overflow: hidden; display: grid; place-items: center; }
+
+  /* Paw detection visual */
+  .draft { position: relative; width: 82%; max-width: 380px; background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; z-index: 1; }
   .draft .to { font-size: 13px; font-weight: 700; color: var(--soft); }
-  .draft .mash { margin-top: 6px; font: 17px/1.4 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
-  .stamp { position: absolute; right: -10px; top: -14px; transform: rotate(8deg); background: #E8573F; color: #fff; font-size: 13px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; padding: 6px 11px; border-radius: 8px; box-shadow: 0 4px 12px rgba(232, 87, 63, .35); }
-  .paws .fine { font-size: 14px; margin: 16px 0 0; }
-  .paws picture img { position: relative; width: 100%; max-width: 380px; height: auto; display: block; margin: 0 auto; }
-  @media (max-width: 760px) { .paws { grid-template-columns: 1fr; padding: 28px 20px; } }
-  .hero img { width: 100%; height: auto; display: block; }
+  .draft .mash { margin-top: 8px; min-height: 52px; font: 18px/1.45 ui-monospace, Menlo, Consolas, monospace; overflow-wrap: anywhere; }
+  .draft .mash::after { content: ""; display: inline-block; width: 2px; height: 1.1em; background: var(--coral); vertical-align: -3px; margin-left: 1px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .stamp { position: absolute; right: -12px; top: -16px; transform: rotate(8deg) scale(0); background: var(--coral); color: #fff; font-size: 13px; font-weight: 900; letter-spacing: .1em;
+    text-transform: uppercase; padding: 7px 12px; border-radius: 8px; box-shadow: 0 6px 14px rgba(232, 87, 63, .35); transition: transform .35s cubic-bezier(.2, 1.6, .4, 1); }
+  .stamp.on { transform: rotate(8deg) scale(1); }
+  .trail { position: absolute; inset: 0; color: var(--coral); pointer-events: none; }
+  .trail svg { position: absolute; width: 34px; height: 34px; opacity: 0; transition: opacity .3s; }
+  .trail svg.on { opacity: .22; }
 
-  section { padding: 72px 0 0; }
-  h2 { font-size: clamp(28px, 4vw, 38px); font-weight: 800; text-align: center; margin: 0 0 10px; }
-  .sub { text-align: center; color: var(--soft); margin: 0 auto 34px; max-width: 560px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+  /* Unlock word visual */
+  .word { display: flex; gap: 8px; }
+  .word span { width: 46px; height: 52px; border-radius: 12px; display: grid; place-items: center; font: 800 22px/1 ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+    background: linear-gradient(#fffdf9, #f0e9de); border: 1px solid #ddd2c2; box-shadow: 0 4px 0 #cfc3b0; color: #2a2621; transform: translateY(0); transition: transform .12s, box-shadow .12s, background .3s; }
+  @media (prefers-color-scheme: dark) { .word span { background: linear-gradient(#3a3632, #2a2724); border-color: #0f0e0c; box-shadow: 0 4px 0 #0a0908; color: #f3ece1; } }
+  .word span.down { transform: translateY(3px); box-shadow: 0 1px 0 #cfc3b0; }
+  .word.done span { background: var(--teal-soft); }
+  .wordcap { margin-top: 18px; font-weight: 700; color: var(--soft); font-size: 15px; min-height: 1.5em; text-align: center; }
+
+  /* Timer visual */
+  .clock { width: 190px; height: 190px; position: relative; }
+  .clock svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .clock .track { stroke: var(--line); }
+  .clock .arc { stroke: var(--teal); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .clock .t { position: absolute; inset: 0; display: grid; place-items: center; font: 900 40px/1 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+  .opts { display: flex; gap: 8px; margin-top: 18px; justify-content: center; flex-wrap: wrap; }
+  .opts span { font-size: 13px; font-weight: 700; padding: 6px 11px; border-radius: 99px; border: 1px solid var(--line); color: var(--soft); }
+  .opts span.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  /* Never locks you out visual */
+  .events { display: grid; gap: 10px; width: 78%; max-width: 360px; }
+  .ev { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); font-weight: 700; font-size: 15px;
+    opacity: .45; transition: opacity .4s, transform .4s; }
+  .ev.on { opacity: 1; transform: translateX(4px); }
+  .ev .ic { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--coral-soft); color: var(--coral); }
+  .ev .ic svg { width: 18px; height: 18px; }
+  .ev .ok { margin-left: auto; color: var(--teal); font-size: 13px; opacity: 0; transition: opacity .3s; }
+  .ev.on .ok { opacity: 1; }
+
+  /* Feature grid */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 24px; transition: transform .25s, box-shadow .25s; }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px -26px rgba(60, 40, 20, .35); }
   .card .tile { width: 44px; height: 44px; border-radius: 13px; background: var(--coral-soft); color: var(--coral); display: grid; place-items: center; }
-  .card .tile svg { width: 24px; height: 24px; }
+  .card .tile svg { width: 23px; height: 23px; }
   .card h3 { font-size: 19px; margin: 14px 0 6px; }
   .card p { margin: 0; color: var(--soft); font-size: 15.5px; }
 
-  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
-  .vault { position: relative; margin: 0; padding: 24px 0; }
-  .vault img { display: block; width: 100%; max-width: 380px; height: auto; margin: 0 auto; }
-  .badge { position: absolute; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 10px 16px; font-size: 15px; font-weight: 800; white-space: nowrap; box-shadow: 0 8px 22px rgba(27, 23, 38, .14); }
-  .badge::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 4px; background: var(--coral); margin-right: 8px; vertical-align: middle; }
-  .b1 { top: 0; left: 2%; transform: rotate(-4deg); }
-  .b2 { top: 48%; right: 0; transform: rotate(3deg); }
-  .b3 { bottom: 12%; left: 6%; transform: rotate(-2deg); }
-  .split ul { padding-left: 0; list-style: none; margin: 0; }
-  .split li { position: relative; padding: 0 0 14px 24px; color: var(--soft); }
-  .split li strong { color: var(--ink); }
-  .split li::before { content: ""; position: absolute; left: 4px; top: .65em; width: 8px; height: 8px; border-radius: 4px; background: var(--coral); }
-  @media (max-width: 760px) { .split { grid-template-columns: 1fr; } }
+  /* Privacy */
+  .privacy { background: var(--surface); border: 1px solid var(--line); border-radius: 28px; padding: 48px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 40px; align-items: center; }
+  .privacy ul { list-style: none; padding: 0; margin: 0; }
+  .privacy li { position: relative; padding: 0 0 16px 30px; color: var(--soft); }
+  .privacy li strong { color: var(--ink); }
+  .privacy li svg { position: absolute; left: 0; top: 4px; width: 18px; height: 18px; color: var(--teal); }
+  .privacy picture img { width: 100%; max-width: 360px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 24px 30px rgba(60, 40, 20, .18)); }
 
-  footer { text-align: center; color: var(--soft); font-size: 14px; padding: 72px 0 48px; }
-  footer a { color: var(--soft); text-decoration: underline; }
+  /* Price */
+  .pricing { display: grid; place-items: center; }
+  .price { width: 100%; max-width: 520px; background: var(--surface); border: 1px solid var(--line); border-radius: 28px; padding: 36px; text-align: center; box-shadow: var(--shadow); }
+  .price .label { font-weight: 800; color: var(--soft); font-size: 15px; }
+  .price-big { font-size: 72px; font-weight: 900; line-height: 1; margin: 10px 0 4px; }
+  .price-big small { font-size: 22px; color: var(--soft); font-weight: 800; }
+  .price ul { list-style: none; padding: 0; margin: 22px 0 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; text-align: left; }
+  .price li { display: flex; gap: 8px; align-items: center; font-size: 15px; font-weight: 600; }
+  .price li svg { width: 16px; height: 16px; color: var(--teal); }
+  .price .buy { width: 100%; justify-content: center; }
+  .price .fine { margin-top: 14px; }
 
-  /* Live demo: a working Paws Off card that loops through locking, unlocking and catching a paw. */
-  .demo { padding: 40px 0 0; display: flex; flex-direction: column; align-items: center; }
-  .demo-card { --bg-a: #f2ede4; --bg-b: #ece5da; --you-a: #e6f3ee; --you-b: #d9ebe4; --paw-a: #f4eaea; --paw-b: #eddede;
-    --ink: #2a2621; --soft: rgba(42,38,33,.62); --line: rgba(42,38,33,.1); --teal: #2aa68f; --coral: #e8704f;
-    --chip: rgba(255,255,255,.6); --top-a: #fffdf9; --top-b: #f0e9de; --dish-a: #f5efe6; --dish-b: #fbf8f2; --kb: #ddd2c2; --side: #cfc3b0; --leg: #a0958a;
-    --shadow: rgba(60,40,20,.35);
-    position: relative; width: 320px; height: 430px; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; align-items: center;
-    color: var(--ink); font-family: ui-rounded, "SF Pro Rounded", -apple-system, "Segoe UI", system-ui, sans-serif; text-align: center;
-    box-shadow: 0 30px 60px -24px rgba(27,23,38,.45), 0 0 0 1px rgba(27,23,38,.08); }
-  @media (prefers-color-scheme: dark) {
-    .demo-card { --bg-a: #2d2a26; --bg-b: #171513; --you-a: #1f3833; --you-b: #111a18; --paw-a: #38272a; --paw-b: #191112;
-      --ink: #f3ece1; --soft: rgba(243,236,225,.62); --line: rgba(255,255,255,.09); --teal: #4fd6b8; --coral: #ff8a5c;
-      --chip: rgba(255,255,255,.06); --top-a: #3a3632; --top-b: #2a2724; --dish-a: #2c2926; --dish-b: #34312d; --kb: #0f0e0c; --side: #0a0908; --leg: #8d8376;
-      --shadow: rgba(0,0,0,.6); box-shadow: 0 30px 60px -24px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.08); }
+  /* FAQ */
+  .faq { max-width: 760px; margin: 0 auto; }
+  details { border-bottom: 1px solid var(--line); padding: 18px 2px; }
+  summary { cursor: pointer; list-style: none; font-weight: 800; font-size: 18px; display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--coral); font-size: 24px; line-height: 1; transition: transform .25s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { color: var(--soft); margin: 10px 0 0; }
+
+  .final { text-align: center; padding: 110px 0 30px; }
+  .final .icon { width: 84px; height: 84px; }
+  footer { text-align: center; color: var(--soft); font-size: 14px; padding: 40px 0 48px; }
+
+  /* Scroll reveal */
+  .rv { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .8, .3, 1); }
+  .rv.in { opacity: 1; transform: none; }
+  .rv.d1 { transition-delay: .08s; } .rv.d2 { transition-delay: .16s; } .rv.d3 { transition-delay: .24s; }
+
+  @media (max-width: 900px) {
+    nav .links { display: none; }
+    .row, .privacy { grid-template-columns: 1fr; }
+    .row.flip > :first-child { order: 0; }
+    .grid { grid-template-columns: 1fr 1fr; }
+    .desk { flex-direction: column; padding: 26px 14px; gap: 22px; }
+    .board { width: 100%; }
   }
-  .demo-card .bg { position: absolute; inset: 0; transition: opacity .5s ease; }
-  .demo-card .b-rest { background: linear-gradient(var(--bg-a), var(--bg-b)); }
-  .demo-card .b-you { background: linear-gradient(var(--you-a), var(--you-b)); opacity: 0; }
-  .demo-card .b-paw { background: linear-gradient(var(--paw-a), var(--paw-b)); opacity: 0; }
-  @media (prefers-color-scheme: dark) {
-    .demo-card .b-rest { background: radial-gradient(120% 80% at 50% 30%, var(--bg-a), var(--bg-b)); }
-    .demo-card .b-you { background: radial-gradient(120% 80% at 50% 30%, var(--you-a), var(--you-b)); }
-    .demo-card .b-paw { background: radial-gradient(120% 80% at 50% 30%, var(--paw-a), var(--paw-b)); }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; }
+    .privacy { padding: 28px 20px; }
+    .price { padding: 28px 20px; }
+    .price ul { grid-template-columns: 1fr; }
+    .buy:not(.small) .label-long { display: none; }
+    .kb { padding: 8px; border-radius: 14px; }
+    .kb .r { gap: 3px; } .kb .r + .r { margin-top: 3px; }
+    .k { height: 30px; border-radius: 6px; font-size: 10px; }
   }
-  .demo-card.you .b-you, .demo-card.paw .b-paw { opacity: 1; }
-  .demo-card > :not(.bg) { position: relative; }
-  .demo-card svg { width: 14px; height: 14px; flex: none; }
-  .d-chip { margin-top: 16px; height: 30px; padding: 0 13px; display: inline-flex; align-items: center; gap: 7px; border-radius: 99px;
-    background: var(--chip); border: 1px solid var(--line); font-size: 12px; font-weight: 700; }
-  .d-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); }
-  .d-chip .lk, .d-chip .pw { display: none; width: 12px; height: 12px; }
-  .d-chip .lk { color: var(--teal); } .d-chip .pw { color: var(--coral); }
-  .demo-card.you .d-chip .dot, .demo-card.paw .d-chip .dot { display: none; }
-  .demo-card.you .d-chip .lk, .demo-card.paw .d-chip .pw { display: block; }
-  .d-stage { position: relative; width: 100%; height: 196px; margin-top: 6px; display: grid; place-items: center; }
-  .d-key { position: relative; width: 150px; height: 150px; border-radius: 34px; background: linear-gradient(var(--top-a), var(--top-b)); border: 1px solid var(--kb);
-    box-shadow: inset 0 2px 0 rgba(255,255,255,.5), 0 11px 0 var(--side), 0 24px 30px -6px var(--shadow); transform: translateY(-6px);
-    transition: transform .25s cubic-bezier(.2,.8,.3,1), box-shadow .25s cubic-bezier(.2,.8,.3,1); display: grid; place-items: center; }
-  @media (prefers-color-scheme: dark) { .d-key { box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 11px 0 var(--side), 0 24px 30px -6px var(--shadow); } }
-  .d-key::after { content: ""; position: absolute; inset: 14px; border-radius: 24px; background: linear-gradient(var(--dish-a), var(--dish-b)); box-shadow: inset 0 1px 3px rgba(0,0,0,.14); }
-  .demo-card.you .d-key, .demo-card.paw .d-key, .d-key.press { transform: translateY(4px); box-shadow: inset 0 2px 0 rgba(255,255,255,.4), 0 2px 0 var(--side), 0 8px 14px -4px var(--shadow); }
-  .d-leg { position: absolute; left: 26px; top: 23px; z-index: 1; font-size: 9.5px; font-weight: 900; letter-spacing: .14em; color: var(--leg); }
-  .d-led { position: absolute; right: 27px; top: 26px; z-index: 1; width: 8px; height: 8px; border-radius: 50%; opacity: 0; transition: opacity .3s; }
-  .demo-card.you .d-led { opacity: 1; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
-  .demo-card.paw .d-led { opacity: 1; background: var(--coral); box-shadow: 0 0 8px var(--coral); }
-  .d-key .sym { position: relative; z-index: 1; width: 46px; height: 46px; color: var(--ink); transition: color .3s; }
-  .d-key .s-lock { display: none; }
-  .demo-card.you .d-key .s-paw { display: none; }
-  .demo-card.you .d-key .s-lock { display: block; color: var(--teal); filter: drop-shadow(0 0 9px var(--teal)); }
-  .demo-card.paw .d-key .s-paw { color: var(--coral); filter: drop-shadow(0 0 9px var(--coral)); }
-  .d-paws { position: absolute; inset: 0; pointer-events: none; }
-  .d-paws svg { position: absolute; width: 26px; height: 26px; color: var(--coral); opacity: 0; transform: scale(.6); transition: opacity .25s, transform .25s; }
-  .d-paws svg.on { opacity: .8; transform: scale(1); }
-  .d-title { margin: 2px 0 0; font-size: 20px; font-weight: 800; }
-  .d-sub { margin: 3px 0 0; max-width: 266px; font-size: 12px; line-height: 1.42; color: var(--soft); }
-  .d-row { margin-top: 11px; height: 30px; display: flex; align-items: center; }
-  .d-pill, .d-info { height: 28px; padding: 0 12px; border-radius: 99px; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; }
-  .d-pill { background: linear-gradient(var(--top-a), var(--top-b)); border: 1px solid var(--kb); box-shadow: 0 2px 0 var(--side); }
-  .d-info { display: none; background: var(--chip); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
-  .demo-card.you .d-pill, .demo-card.paw .d-pill { display: none; }
-  .demo-card.you .d-info, .demo-card.paw .d-info { display: inline-flex; }
-  .d-foot { margin-top: auto; width: 100%; height: 44px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 6px; padding: 0 16px;
-    font-size: 11.5px; font-weight: 600; color: var(--soft); }
-  .d-foot .fp { color: var(--coral); }
-  .d-foot .ft { flex: 1; text-align: left; }
-  .d-cursor { position: absolute; left: 230px; top: 330px; width: 22px !important; height: 22px !important; opacity: 0; z-index: 5;
-    transition: left .7s cubic-bezier(.4,0,.2,1), top .7s cubic-bezier(.4,0,.2,1), opacity .3s, transform .12s; filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
-  .d-cursor.show { opacity: 1; } .d-cursor.at { left: 172px; top: 150px; } .d-cursor.click { transform: scale(.85); }
-  .demo-cap { margin: 18px 0 0; min-height: 1.6em; color: var(--soft); font-size: 16px; transition: opacity .3s; }
-  .demo-cap b { color: var(--ink); }
-  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  /* Paw prints in the paw detection spotlight step in, one after another. */
-  .paws .trail g g { animation: step 7s infinite; opacity: 0; }
-  .paws .trail g g:nth-child(1) { animation-delay: 0s; } .paws .trail g g:nth-child(2) { animation-delay: .45s; }
-  .paws .trail g g:nth-child(3) { animation-delay: .9s; } .paws .trail g g:nth-child(4) { animation-delay: 1.35s; }
-  .paws .trail g g:nth-child(5) { animation-delay: 2.3s; } .paws .trail g g:nth-child(6) { animation-delay: 2.75s; }
-  @keyframes step { 0% { opacity: 0; } 4% { opacity: 1; } 70% { opacity: 1; } 85%, 100% { opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) { .paws .trail g g { animation: none; opacity: 1; } .d-cursor { display: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .rv { opacity: 1; transform: none; }
+  }
 </style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <symbol id="d-paw" viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.6" cy="10.6" rx="2.1" ry="2.6" transform="rotate(-18 5.6 10.6)"/><ellipse cx="9.4" cy="6.4" rx="2.1" ry="2.7" transform="rotate(-6 9.4 6.4)"/><ellipse cx="14.6" cy="6.4" rx="2.1" ry="2.7" transform="rotate(6 14.6 6.4)"/><ellipse cx="18.4" cy="10.6" rx="2.1" ry="2.6" transform="rotate(18 18.4 10.6)"/></g></symbol>
-  <symbol id="d-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></g></symbol>
-  <symbol id="d-unlock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 7.6-1.7"/></g></symbol>
-  <symbol id="d-kbd" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6 10h.01M9 10h.01M12 10h.01M15 10h.01M18 10h.01M6 13h.01M9 13h.01M12 13h.01M15 13h.01M18 13h.01M8 15.6h8"/></g></symbol>
-  <symbol id="d-timer" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.8h4"/></g></symbol>
-  <symbol id="d-chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="d-gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10.3 3h3.4l.5 2.4 1.6.9 2.3-.8 1.7 2.9-1.8 1.6v1.9l1.8 1.6-1.7 2.9-2.3-.8-1.6.9-.5 2.4h-3.4l-.5-2.4-1.6-.9-2.3.8-1.7-2.9L6 12.9V11L4.2 9.4l1.7-2.9 2.3.8 1.6-.9z"/><circle cx="12" cy="12" r="2.8"/></g></symbol>
+  <symbol id="paw" viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.6" cy="10.6" rx="2.1" ry="2.6" transform="rotate(-18 5.6 10.6)"/><ellipse cx="9.4" cy="6.4" rx="2.1" ry="2.7" transform="rotate(-6 9.4 6.4)"/><ellipse cx="14.6" cy="6.4" rx="2.1" ry="2.7" transform="rotate(6 14.6 6.4)"/><ellipse cx="18.4" cy="10.6" rx="2.1" ry="2.6" transform="rotate(18 18.4 10.6)"/></g></symbol>
+  <symbol id="pawring" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="currentColor"/><g fill="var(--ring-ink, #fff)" transform="translate(4.2 4.2) scale(.65)"><ellipse cx="12" cy="16.2" rx="5.2" ry="4.4"/><ellipse cx="5.6" cy="10.6" rx="2.1" ry="2.6" transform="rotate(-18 5.6 10.6)"/><ellipse cx="9.4" cy="6.4" rx="2.1" ry="2.7" transform="rotate(-6 9.4 6.4)"/><ellipse cx="14.6" cy="6.4" rx="2.1" ry="2.7" transform="rotate(6 14.6 6.4)"/><ellipse cx="18.4" cy="10.6" rx="2.1" ry="2.6" transform="rotate(18 18.4 10.6)"/></g></symbol>
+  <symbol id="lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></g></symbol>
+  <symbol id="kbd" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6 10h.01M9 10h.01M12 10h.01M15 10h.01M18 10h.01M6 13h.01M9 13h.01M12 13h.01M15 13h.01M18 13h.01M8 15.6h8"/></g></symbol>
+  <symbol id="timer" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.8h4"/></g></symbol>
+  <symbol id="chev" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="gear" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M10.3 3h3.4l.5 2.4 1.6.9 2.3-.8 1.7 2.9-1.8 1.6v1.9l1.8 1.6-1.7 2.9-2.3-.8-1.6.9-.5 2.4h-3.4l-.5-2.4-1.6-.9-2.3.8-1.7-2.9L6 12.9V11L4.2 9.4l1.7-2.9 2.3.8 1.6-.9z"/><circle cx="12" cy="12" r="2.8"/></g></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8-7.5 9.5-4.3-1.5-7.5-4.9-7.5-9.5V6z"/><path d="M8.7 12.2l2.3 2.3 4.4-4.6"/></g></symbol>
+  <symbol id="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></symbol>
+  <symbol id="user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-3.6 3.6-5.6 7-5.6s6.2 2 7 5.6"/></g></symbol>
+  <symbol id="power" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 3.5v8"/><path d="M7 6.3a7.5 7.5 0 1 0 10 0"/></g></symbol>
+  <symbol id="cat" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9V4l3.5 3h7L19 4v5"/><path d="M5 9c0 6 2.5 10 7 10s7-4 7-10"/><path d="M9.5 12.5h.01M14.5 12.5h.01"/><path d="M12 15l-1 .8M12 15l1 .8"/></g></symbol>
+  <symbol id="wifi" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 9.5a12 12 0 0 1 17 0"/><path d="M6.5 12.8a7.6 7.6 0 0 1 11 0"/><path d="M9.6 16a3.2 3.2 0 0 1 4.8 0"/></g><circle cx="12" cy="19" r="1.2" fill="currentColor"/></symbol>
+  <symbol id="battery" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="7.5" width="17" height="9" rx="2.5"/><path d="M21.5 10.5v3" stroke-linecap="round"/></g><rect x="4.5" y="9.5" width="11" height="5" rx="1.2" fill="currentColor"/></symbol>
+  <symbol id="win" viewBox="0 0 24 24"><g fill="currentColor"><path d="M3 5.3l7.5-1v7.2H3zM11.5 4.1L21 2.8v8.7h-9.5zM3 12.5h7.5v7.2l-7.5-1zM11.5 12.5H21v8.7l-9.5-1.3z"/></g></symbol>
+  <symbol id="mac" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8 20h8M12 16.5V20"/></g></symbol>
+  <symbol id="sparkle" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></g></symbol>
+  <symbol id="menubar" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M2.5 8.5h19"/></g><circle cx="17" cy="6.25" r="1.1" fill="currentColor"/></symbol>
+  <symbol id="half" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></symbol>
+  <symbol id="seal" viewBox="0 0 24 24"><polygon points="12,1.5 14.4,3.4 17.4,3 18.5,5.8 21.3,6.9 20.9,9.9 22.8,12.3 20.9,14.7 21.3,17.7 18.5,18.8 17.4,21.6 14.4,21.2 12,23.1 9.6,21.2 6.6,21.6 5.5,18.8 2.7,17.7 3.1,14.7 1.2,12.3 3.1,9.9 2.7,6.9 5.5,5.8 6.6,3 9.6,3.4" fill="currentColor"/><path d="M8 12.4l2.7 2.7 5.5-5.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </defs></svg>
+
+<div class="top">
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#"><img src="images/icon.png" alt="">Paws Off</a>
+      <div class="links"><a href="#try">Try it</a><a href="#features">Features</a><a href="#privacy">Privacy</a><a href="#buy">Price</a><a href="#faq">FAQ</a></div>
+      <button class="buy small" aria-disabled="true" title="Checkout opens soon">$5.99 <span class="soon"><i></i>Coming soon</span></button>
+    </nav>
+  </div>
+</div>
+
 <div class="wrap">
-  <nav>
-    <span class="brand"><img src="images/icon.png" alt="">Paws Off</span>
-    <a class="navdl" href="#download">Download</a>
-  </nav>
-
-  <header>
-    <img class="icon" src="images/icon.png" alt="Paws Off icon">
-    <h1>Pause your keyboard<br>with one click.</h1>
-    <p class="lede">Wipe it down without typing gibberish, or step away without your cat writing your emails. Free for Mac and Windows.</p>
-
-    <div class="install">
-      <div class="tabs" role="tablist">
-        <button role="tab" id="t-mac" aria-controls="p-mac">Mac</button>
-        <button role="tab" id="t-win" aria-controls="p-win">Windows</button>
-        <button role="tab" id="t-brew" aria-controls="p-brew">Homebrew</button>
-      </div>
-      <div class="panel" id="p-mac" role="tabpanel">
-        <div class="cmd"><code>curl -fsSL https://enigmaticzee.github.io/PawsOff-site/install.sh | bash</code><button>Copy</button></div>
-        <p class="hint">Paste into Terminal. It installs Paws Off into Applications and opens it. <a href="install.sh">See what the command does</a>.</p>
-      </div>
-      <div class="panel" id="p-win" role="tabpanel" hidden>
-        <div class="cmd"><code>irm https://enigmaticzee.github.io/PawsOff-site/install.ps1 | iex</code><button>Copy</button></div>
-        <p class="hint">Paste into PowerShell. It installs Paws Off just for you (no admin rights) and starts it, without the SmartScreen warning. <a href="install.ps1">See what the command does</a>.</p>
-      </div>
-      <div class="panel" id="p-brew" role="tabpanel" hidden>
-        <div class="cmd"><code>brew install --cask enigmaticzee/tap/paws-off</code><button>Copy</button></div>
-        <p class="hint">Then open Paws Off from Applications. Switch on Updates in its Settings and it keeps itself up to date.</p>
-      </div>
+  <header class="hero">
+    <img class="icon rv" src="images/icon.png" alt="Paws Off icon">
+    <h1 class="rv d1">Pause your keyboard<br>with <span class="hl">one click</span>.</h1>
+    <p class="lede rv d2">Wipe it down without typing gibberish, or step away without your cat writing your emails. For Mac and Windows.</p>
+    <div class="ctas rv d3">
+      <button class="buy" aria-disabled="true" title="Checkout opens soon"><span class="label-long">Get Paws Off for</span> $5.99 <span class="soon"><i></i>Coming soon</span></button>
     </div>
-    <p class="or">or download it</p>
-    <div class="downloads" id="download">
-      <a class="dl" href="https://github.com/EnigmaticZee/PawsOff-site/releases/latest/download/PawsOff-mac.dmg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.37 12.6c-.03-2.7 2.2-4 2.3-4.07-1.26-1.83-3.21-2.08-3.9-2.11-1.66-.17-3.24.98-4.08.98-.85 0-2.14-.96-3.52-.93-1.81.03-3.48 1.05-4.41 2.67-1.88 3.26-.48 8.08 1.35 10.73.9 1.29 1.96 2.75 3.36 2.7 1.35-.05 1.86-.87 3.49-.87 1.63 0 2.09.87 3.51.84 1.45-.03 2.37-1.32 3.26-2.62 1.03-1.5 1.45-2.95 1.47-3.03-.03-.01-2.82-1.08-2.85-4.29zM13.7 4.67c.74-.9 1.24-2.15 1.11-3.39-1.07.04-2.36.71-3.13 1.61-.69.8-1.29 2.07-1.13 3.29 1.19.09 2.41-.61 3.15-1.51z"></path></svg>Download for Mac <small>.dmg</small></a>
-      <a class="dl win" href="https://github.com/EnigmaticZee/PawsOff-site/releases/latest/download/PawsOff-Windows-Setup.exe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4.3l8.2-1.1v7.9H2zm9.2-1.3L22 1.5v9.6H11.2zM2 12.1h8.2V20L2 18.9zm9.2 0H22v9.4l-10.8-1.5z"></path></svg>Download for Windows <small>.exe</small></a>
-    </div>
-    <p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="12.00,1.00 14.43,2.92 17.50,2.47 18.65,5.35 21.53,6.50 21.08,9.57 23.00,12.00 21.08,14.43 21.53,17.50 18.65,18.65 17.50,21.53 14.43,21.08 12.00,23.00 9.57,21.08 6.50,21.53 5.35,18.65 2.47,17.50 2.92,14.43 1.00,12.00 2.92,9.57 2.47,6.50 5.35,5.35 6.50,2.47 9.57,2.92" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></polygon><path d="M8 12.4l2.7 2.7L16.2 9.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg><span><strong>Notarized by Apple.</strong> The Mac app opens like any other app.</span></p>
-    <p class="hint" style="text-align:center">On Windows, SmartScreen may ask you to confirm once: <strong>More info → Run anyway</strong>.</p>
-    <p class="meta">macOS 14+ (Apple Silicon &amp; Intel) · Windows 10 &amp; 11</p>
+    <ul class="facts rv d3">
+      <li><svg><use href="#mac"/></svg>macOS 14 or later</li>
+      <li><svg><use href="#win"/></svg>Windows 10 &amp; 11</li>
+      <li><svg><use href="#check"/></svg>Pay once</li>
+      <li><svg><use href="#check"/></svg>All your computers</li>
+    </ul>
   </header>
 
-  <section class="demo" aria-labelledby="demo-label">
-    <p class="vh" id="demo-label">Paws Off in action: you click the big key to lock your keyboard, click again to unlock, and when a cat walks on the keys it locks by itself.</p>
-    <div class="demo-card" aria-hidden="true">
-      <i class="bg b-rest"></i><i class="bg b-you"></i><i class="bg b-paw"></i>
-      <div class="d-chip"><i class="dot"></i><svg class="lk"><use href="#d-lock"/></svg><svg class="pw"><use href="#d-paw"/></svg><span class="ct">Watching for paws</span></div>
-      <div class="d-stage">
-        <div class="d-key"><span class="d-leg">LOCK</span><i class="d-led"></i><svg class="sym s-paw"><use href="#d-paw"/></svg><svg class="sym s-lock"><use href="#d-lock"/></svg></div>
-        <div class="d-paws"><svg style="left:46px;top:150px;transform:rotate(-20deg)"><use href="#d-paw"/></svg><svg style="left:92px;top:120px"><use href="#d-paw"/></svg><svg style="left:200px;top:96px"><use href="#d-paw"/></svg><svg style="left:246px;top:64px"><use href="#d-paw"/></svg></div>
-      </div>
-      <h3 class="d-title">Click to lock.</h3>
-      <p class="d-sub">It locks by itself when a cat walks on the keys. Lock it yourself to clean or step away.</p>
-      <div class="d-row"><span class="d-pill"><svg><use href="#d-timer"/></svg>Until I unlock<svg style="width:11px;height:11px;opacity:.55"><use href="#d-chev"/></svg></span><span class="d-info"><svg><use href="#d-kbd"/></svg><span class="dn">0</span>&nbsp;keys caught</span></div>
-      <div class="d-foot"><svg class="fp"><use href="#d-paw"/></svg><span class="ft">3,118 keys politely ignored</span><svg class="fg"><use href="#d-gear"/></svg></div>
-      <svg class="d-cursor" viewBox="0 0 24 24"><path d="M5 3l14 9-6.5 1.4L16 20.5l-2.6 1.2-3.5-7.1L5 19z" fill="#fff" stroke="#2a2621" stroke-width="1.4" stroke-linejoin="round"/></svg>
+  <!-- Try it: the real panel, next to a keyboard that's yours. -->
+  <section class="try" id="try" aria-label="Try Paws Off">
+    <div class="try-head">
+      <div class="eyebrow rv"><svg><use href="#kbd"/></svg>Your keyboard works on this page</div>
+      <h2 class="rv d1">Lock it. Then try to type.</h2>
+      <p class="rv d2">Type in the message, click the big key, and type again. Your letters bounce right off. Type <kbd class="uw">unlock</kbd> to get them back. In the app, you can pick your own word.</p>
     </div>
-    <p class="demo-cap" aria-hidden="true">Click once to lock your keyboard.</p>
+    <div class="desk rv" id="desk">
+      <div class="panel" id="panel" role="group" aria-label="Paws Off">
+        <i class="bg b-rest"></i><i class="bg b-you"></i><i class="bg b-paw"></i>
+        <button class="p-chip" id="chip" title="Paw detection locks the keyboard by itself when a cat walks on it. Click to switch it off."><i class="dot"></i><svg class="lk"><use href="#lock"/></svg><svg class="pw"><use href="#paw"/></svg><span id="chipText">Watching for paws</span></button>
+        <div class="p-stage">
+          <button class="p-key" id="key" aria-label="Lock the keyboard"><span class="p-leg" id="leg">LOCK</span><i class="p-led"></i><svg class="sym s-paw"><use href="#paw"/></svg><svg class="sym s-lock"><use href="#lock"/></svg></button>
+        </div>
+        <h3 class="p-title" id="title">Click to lock.</h3>
+        <p class="p-sub" id="sub">It locks by itself when a cat walks on the keys. Lock it yourself to clean or step away.</p>
+        <div class="p-row">
+          <svg><use href="#timer"/></svg>
+          <button class="p-pill" id="pill"><span id="pillText">Until I unlock</span><svg style="width:10px;height:10px;opacity:.55"><use href="#chev"/></svg></button>
+          <div class="p-menu" id="menu" role="menu">
+            <button data-s="0" class="sel"><svg class="ck"><use href="#check"/></svg>Until I unlock</button>
+            <button data-s="120"><svg class="ck"><use href="#check"/></svg>For 2 minutes</button>
+            <button data-s="300"><svg class="ck"><use href="#check"/></svg>For 5 minutes</button>
+            <button data-s="900"><svg class="ck"><use href="#check"/></svg>For 15 minutes</button>
+          </div>
+          <span class="p-info"><svg><use href="#kbd"/></svg><span id="info">0 keys caught</span></span>
+        </div>
+        <div class="p-foot"><svg class="fp" id="footIcon"><use href="#paw"/></svg><span class="ft" id="foot">⌃⌘L locks from anywhere</span><svg><use href="#gear"/></svg></div>
+      </div>
+      <div class="board">
+        <div class="field">
+          <div class="lbl"><span>Message to the team</span><span class="held"><svg><use href="#lock"/></svg><span id="heldText">Keys held by Paws Off</span></span></div>
+          <textarea id="noteText" spellcheck="false" placeholder="Click here and type something…"></textarea>
+        </div>
+        <div class="kb" id="kb" aria-hidden="true"><div class="walk" id="walk"></div></div>
+      </div>
+    </div>
+    <div class="try-under">
+      <div class="chips">
+        <button class="chip" id="catBtn"><svg><use href="#cat"/></svg>Send a cat across the keys</button>
+        <button class="chip" id="kbdBtn"><svg><use href="#paw"/></svg>Hold 4 keys, like a paw</button>
+        <button class="chip" id="scBtn" title="Locks and unlocks from anywhere"><kbd>⌃⌘L</kbd></button>
+      </div>
+      <p class="try-note">Nothing you type here leaves this page.</p>
+    </div>
   </section>
 
-
-  <section>
-    <div class="paws">
-      <svg class="trail" viewBox="0 0 1040 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="currentColor"><g transform="translate(560 520) rotate(-28) scale(1.5)"><ellipse cx="-9" cy="-4" rx="3.6" ry="4.6"></ellipse><ellipse cx="-3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="9" cy="-4" rx="3.6" ry="4.6"></ellipse><path d="M0 0c-5 0-9.3 4.4-9.3 8.8 0 3 2.3 4.4 5 4 1.6-.3 2.8-1 4.3-1s2.7.7 4.3 1c2.7.4 5-1 5-4C9.3 4.4 5 0 0 0z"></path></g><g transform="translate(520 455) rotate(-28) scale(1.5)"><ellipse cx="-9" cy="-4" rx="3.6" ry="4.6"></ellipse><ellipse cx="-3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="9" cy="-4" rx="3.6" ry="4.6"></ellipse><path d="M0 0c-5 0-9.3 4.4-9.3 8.8 0 3 2.3 4.4 5 4 1.6-.3 2.8-1 4.3-1s2.7.7 4.3 1c2.7.4 5-1 5-4C9.3 4.4 5 0 0 0z"></path></g><g transform="translate(575 395) rotate(-28) scale(1.5)"><ellipse cx="-9" cy="-4" rx="3.6" ry="4.6"></ellipse><ellipse cx="-3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="9" cy="-4" rx="3.6" ry="4.6"></ellipse><path d="M0 0c-5 0-9.3 4.4-9.3 8.8 0 3 2.3 4.4 5 4 1.6-.3 2.8-1 4.3-1s2.7.7 4.3 1c2.7.4 5-1 5-4C9.3 4.4 5 0 0 0z"></path></g><g transform="translate(540 330) rotate(-28) scale(1.5)"><ellipse cx="-9" cy="-4" rx="3.6" ry="4.6"></ellipse><ellipse cx="-3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="9" cy="-4" rx="3.6" ry="4.6"></ellipse><path d="M0 0c-5 0-9.3 4.4-9.3 8.8 0 3 2.3 4.4 5 4 1.6-.3 2.8-1 4.3-1s2.7.7 4.3 1c2.7.4 5-1 5-4C9.3 4.4 5 0 0 0z"></path></g><g transform="translate(1000 70) rotate(20) scale(1.5)"><ellipse cx="-9" cy="-4" rx="3.6" ry="4.6"></ellipse><ellipse cx="-3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="9" cy="-4" rx="3.6" ry="4.6"></ellipse><path d="M0 0c-5 0-9.3 4.4-9.3 8.8 0 3 2.3 4.4 5 4 1.6-.3 2.8-1 4.3-1s2.7.7 4.3 1c2.7.4 5-1 5-4C9.3 4.4 5 0 0 0z"></path></g><g transform="translate(1025 10) rotate(20) scale(1.5)"><ellipse cx="-9" cy="-4" rx="3.6" ry="4.6"></ellipse><ellipse cx="-3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="9" cy="-4" rx="3.6" ry="4.6"></ellipse><path d="M0 0c-5 0-9.3 4.4-9.3 8.8 0 3 2.3 4.4 5 4 1.6-.3 2.8-1 4.3-1s2.7.7 4.3 1c2.7.4 5-1 5-4C9.3 4.4 5 0 0 0z"></path></g></g></svg>
-      <div class="copy">
-        <div class="eyebrow"><svg width="18" height="18" viewBox="-12 -16 24 30" fill="currentColor" aria-hidden="true"><ellipse cx="-9" cy="-4" rx="3.6" ry="4.6"></ellipse><ellipse cx="-3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="3.4" cy="-10" rx="3.6" ry="4.8"></ellipse><ellipse cx="9" cy="-4" rx="3.6" ry="4.6"></ellipse><path d="M0 0c-5 0-9.3 4.4-9.3 8.8 0 3 2.3 4.4 5 4 1.6-.3 2.8-1 4.3-1s2.7.7 4.3 1c2.7.4 5-1 5-4C9.3 4.4 5 0 0 0z"></path></svg>Paw detection</div>
+  <!-- Paw detection -->
+  <section id="features">
+    <div class="row">
+      <div class="rv">
+        <div class="eyebrow"><svg><use href="#paw"/></svg>Paw detection</div>
         <h2>Your cat's first email: blocked.</h2>
-        <p>Forgot to lock? When a paw lands on the keys, Paws Off spots it and locks the keyboard before anyone hits send.</p>
+        <p>Forgot to lock? When a paw lands on the keys, Paws Off spots the pile of held keys and locks the keyboard before anyone hits send.</p>
+        <p>It counts held keys (four at once, or two for three seconds) and never reads what you type.</p>
+      </div>
+      <div class="vis rv d1" id="pawVis">
+        <div class="trail" id="trail"></div>
         <div class="draft">
           <div class="to">To: your boss · Subject: re: Q3 plan</div>
-          <div class="mash">jjjjjjjj;;;;;;;; fffffff mrrrp</div>
-          <div class="stamp">Not sent</div>
+          <div class="mash" id="mash"></div>
+          <div class="stamp" id="stamp">Not sent</div>
         </div>
-        <p class="fine">It counts held keys (4 at once, or 2 for 3 seconds) and never reads what you type.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Unlock word -->
+  <section>
+    <div class="row flip">
+      <div class="rv">
+        <div class="eyebrow"><svg><use href="#lock"/></svg>Your unlock word</div>
+        <h2>Pets can't spell.</h2>
+        <p>While it's locked, nothing gets typed, but Paws Off listens for one word. Type it and your keyboard is back. It's <b>unlock</b> until you pick your own.</p>
+        <p>Or just click. Your mouse and trackpad always keep working.</p>
+      </div>
+      <div class="vis rv d1">
+        <div>
+          <div class="word" id="word"><span>u</span><span>n</span><span>l</span><span>o</span><span>c</span><span>k</span></div>
+          <div class="wordcap" id="wordcap">&nbsp;</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timer -->
+  <section>
+    <div class="row">
+      <div class="rv">
+        <div class="eyebrow"><svg><use href="#timer"/></svg>Until you're back, or on a timer</div>
+        <h2>Wipe it down. It unlocks itself.</h2>
+        <p>Leave it locked until you're back, or pick 2, 5 or 15 minutes, or a length of your own, and it lets go by itself. Downloads and calls keep running.</p>
+      </div>
+      <div class="vis rv d1">
+        <div>
+          <div class="clock"><svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="9"/><circle class="arc" id="arc" cx="60" cy="60" r="52" fill="none" stroke-width="9" stroke-dasharray="326.7" stroke-dashoffset="0"/></svg><div class="t" id="clockT">2:00</div></div>
+          <div class="opts"><span>Until I unlock</span><span class="on">2 min</span><span>5 min</span><span>15 min</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Never locks you out -->
+  <section>
+    <div class="row flip">
+      <div class="rv">
+        <div class="eyebrow"><svg><use href="#shield"/></svg>Never locks you out</div>
+        <h2>Your password always gets through.</h2>
+        <p>The moment your computer locks, sleeps, switches user or shuts down, Paws Off hands the keyboard back. If anything ever feels stuck, click Unlock or lock your computer.</p>
+      </div>
+      <div class="vis rv d1">
+        <div class="events" id="events">
+          <div class="ev"><span class="ic"><svg><use href="#lock"/></svg></span>Screen locks<span class="ok">Keyboard back</span></div>
+          <div class="ev"><span class="ic"><svg><use href="#moon"/></svg></span>Computer sleeps<span class="ok">Keyboard back</span></div>
+          <div class="ev"><span class="ic"><svg><use href="#user"/></svg></span>Switch user<span class="ok">Keyboard back</span></div>
+          <div class="ev"><span class="ic"><svg><use href="#power"/></svg></span>Shut down<span class="ok">Keyboard back</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Everything else -->
+  <section>
+    <h2 class="center rv">Small app, careful details</h2>
+    <p class="sub center rv d1">Everything you need to keep paws, sponges and accidents off your keys.</p>
+    <div class="grid">
+      <div class="card rv"><div class="tile"><svg><use href="#sparkle"/></svg></div><h3>Every key, even media keys</h3><p>Letters, shortcuts, volume, brightness: all ignored while it's locked, so you can wipe every corner.</p></div>
+      <div class="card rv d1"><div class="tile"><svg><use href="#menubar"/></svg></div><h3>Lives in your menu bar</h3><p>Click the paw (or the tray icon on Windows) for the panel. Right-click for a quick lock for cleaning.</p></div>
+      <div class="card rv d2"><div class="tile"><svg><use href="#kbd"/></svg></div><h3>A shortcut from anywhere</h3><p>⌃⌘L on Mac, Ctrl+Alt+L on Windows, or any combination you like.</p></div>
+      <div class="card rv"><div class="tile"><svg><use href="#mac"/></svg></div><h3>Mac and Windows</h3><p>The same app on both, made to feel at home on each. One purchase covers all your computers.</p></div>
+      <div class="card rv d1"><div class="tile"><svg><use href="#half"/></svg></div><h3>Light, dark, auto</h3><p>Follows your system, or pick a side. Updates arrive only when you switch them on.</p></div>
+      <div class="card rv d2"><div class="tile"><svg><use href="#paw"/></svg></div><h3>Paw stats</h3><p>A running count of keys your cat didn't type, kept only on your computer. Unpublished cat poetry, safely unsent.</p></div>
+    </div>
+  </section>
+
+  <!-- Privacy -->
+  <section id="privacy">
+    <div class="privacy rv">
+      <div>
+        <div class="eyebrow"><svg><use href="#shield"/></svg>Private by design</div>
+        <h2>It sees key presses. It keeps none of them.</h2>
+        <ul>
+          <li><svg><use href="#check"/></svg><strong>Nothing you type is stored or sent.</strong> While locked it remembers only the last few characters, just enough to spot your unlock word, and forgets them on unlock.</li>
+          <li><svg><use href="#check"/></svg><strong>Paw detection counts keys, never reads them.</strong> It only looks at how many keys are held, and for how long.</li>
+          <li><svg><use href="#check"/></svg><strong>Nothing about you leaves your computer.</strong> No account, no tracking, no analytics, and what you type is never recorded. Updates are off until you switch them on. Once a week Paws Off downloads a public list of cancelled licence keys; it never sends your key or anything about you.</li>
+          <li><svg><use href="#check"/></svg><strong>Notarized by Apple.</strong> Apple checks every Mac release before you download it, and macOS checks again when you open it.</li>
+        </ul>
       </div>
       <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="media/caught-a-paw-dark.png">
-        <img src="media/caught-a-paw-light.png" alt="Paws Off after catching a paw: Caught a paw, 63 keys caught" width="864" height="1148">
+        <source media="(prefers-color-scheme: dark)" srcset="media/settings-dark.png">
+        <img src="media/settings-light.png" alt="Paws Off settings: appearance, unlock phrase, paw detection, updates and paw stats" width="864" height="1148" loading="lazy">
       </picture>
     </div>
   </section>
 
-  <section>
-    <h2>One click, one lock</h2>
-    <p class="sub">For cleaning your keyboard, for stepping away, and for the times a cat gets there first.</p>
-    <div class="grid">
-      <div class="card"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></div><h3>Lock in one click</h3><p>Every key ignored, even media keys, so you can wipe it down or walk away. Your trackpad keeps working, so you can always click Unlock.</p></div>
-      <div class="card"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 10v3.5l2.4 2.4"/><path d="M9.5 3h5"/></svg></div><h3>Until you're back, or on a timer</h3><p>Leave it locked until you type your unlock word (pets can't spell), or pick 2, 5 or 15 minutes and it unlocks itself. Downloads and calls keep running.</p></div>
-      <div class="card"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><path d="M6 10h.01M9.5 10h.01M13 10h.01M17 14H7"/><circle cx="17.5" cy="10" r="1.6" fill="currentColor" stroke="none"/></svg></div><h3>Paw detection</h3><p>Forgot to lock? If a paw lands on the keyboard, Paws Off notices the pile of held keys and locks until you're back.</p></div>
-      <div class="card"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="11" width="15" height="10" rx="2.5"/><path d="M8 11V7.5a4 4 0 0 1 7.6-1.7"/><path d="M12 15.2v2"/></svg></div><h3>Never locks you out</h3><p>The keyboard comes back the moment your computer locks, sleeps or switches user, so you can always type your password.</p></div>
-      <div class="card"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M2.5 8.5h19"/><circle cx="16.5" cy="6.25" r=".9" fill="currentColor" stroke="none"/><circle cx="19" cy="6.25" r=".9" fill="currentColor" stroke="none"/></svg></div><h3>Out of the way</h3><p>Lives in your menu bar or system tray. Click the paw, or use the shortcut from anywhere: ⌃⌘L on Mac, Ctrl+Alt+L on Windows, or your own.</p></div>
-      <div class="card"><div class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></div><h3>Light, dark, auto</h3><p>Follows your system, or pick a side. Switch on updates and new versions install themselves.</p></div>
-    </div>
-  </section>
-
-  <section>
-    <h2>Private by design</h2>
-    <p class="sub">An app that can see key presses has to earn your trust. Here's the deal.</p>
-    <div class="split">
+  <!-- Price -->
+  <section id="buy" class="pricing">
+    <h2 class="center rv">One price. All your computers.</h2>
+    <p class="sub center rv d1">$5.99 once. No subscription, no account, and every Mac and PC you own.</p>
+    <div class="price rv d2">
+      <div class="label">Paws Off for Mac and Windows</div>
+      <div class="price-big">$5.99 <small>once</small></div>
       <ul>
-        <li><strong>Nothing you type is stored or sent.</strong> While locked it remembers only the last few characters, just enough to spot your unlock word, and forgets them on unlock.</li>
-        <li><strong>Paw detection counts keys, never reads them.</strong> It only looks at how many keys are held, and for how long.</li>
-        <li><strong>No network requests unless you ask.</strong> The only one is the update check, and it's off until you switch it on or click Check.</li>
-        <li><strong>Notarized by Apple.</strong> Apple checks every Mac release for malicious software before you download it, and macOS checks again when you open it.</li>
+        <li><svg><use href="#check"/></svg>Mac and Windows</li>
+        <li><svg><use href="#check"/></svg>All your computers</li>
+        <li><svg><use href="#check"/></svg>Paw detection</li>
+        <li><svg><use href="#check"/></svg>Unlock word and timers</li>
+        <li><svg><use href="#check"/></svg>Works offline</li>
+        <li><svg><use href="#check"/></svg>No account needed</li>
       </ul>
-      <figure class="vault">
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="media/settings-dark.png">
-          <img src="media/settings-light.png" alt="Paws Off settings: appearance, unlock phrase, paw detection, updates and paw stats" width="864" height="1148">
-        </picture>
-        <figcaption class="badge b1">0 keystrokes stored</figcaption>
-        <figcaption class="badge b2">Nothing about you sent</figcaption>
-        <figcaption class="badge b3">Works offline</figcaption>
-      </figure>
+      <button class="buy" aria-disabled="true" title="Checkout opens soon">Get Paws Off for $5.99 <span class="soon"><i></i>Coming soon</span></button>
+      <p class="fine">Checkout opens soon. Your licence key arrives by email the moment you buy.<br>macOS 14+ (Apple Silicon and Intel) · Windows 10 &amp; 11</p>
     </div>
   </section>
 
-  <footer>
-    © 2026 Polite Owl — a brand of Observant Systems
-  </footer>
-</div>
-<script>
-  const tabs = [...document.querySelectorAll('[role=tab]')];
-  function select(id) {
-    tabs.forEach(t => {
-      const on = t.id === id;
-      t.setAttribute('aria-selected', on);
-      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-    });
-  }
-  tabs.forEach(t => t.addEventListener('click', () => select(t.id)));
-  select(/Windows/i.test(navigator.userAgent) ? 't-win' : 't-mac');
-  document.querySelectorAll('.cmd button').forEach(b => b.addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(b.previousElementSibling.textContent); b.textContent = 'Copied'; }
-    catch { b.textContent = 'Select & copy'; }
-    setTimeout(() => (b.textContent = 'Copy'), 1600);
-  }));
+  <!-- FAQ -->
+  <section id="faq">
+    <h2 class="center rv">Before you ask</h2>
+    <div class="faq rv d1">
+      <details><summary>Does Paws Off record what I type?</summary><p>No. It has to see key presses to block them, but it never stores or sends them. While locked it keeps only the last few characters, just enough to spot your unlock word, and forgets them on unlock.</p></details>
+      <details><summary>What if it gets stuck?</summary><p>Click Unlock (your mouse always works), type your unlock word, or lock your computer. Paws Off lets go the moment your computer locks, sleeps or switches user.</p></details>
+      <details><summary>How does paw detection know it's a cat?</summary><p>People rarely hold four keys at once, or two keys for three seconds. Paws do it all the time. Paws Off counts held keys and locks when it sees that pattern. You can switch it off in one click.</p></details>
+      <details><summary>Does it work on Windows?</summary><p>Yes. The same app runs in your system tray on Windows 10 and 11, with Ctrl+Alt+L as the shortcut.</p></details>
+      <details><summary>How many computers can I use it on?</summary><p>All of yours. One purchase, any number of your Macs and PCs.</p></details>
+      <details><summary>Does it need the internet?</summary><p>No. Paws Off works completely offline. It only goes online to check for updates if you switch that on, and once a week to check that your licence key hasn't been cancelled. It never sends anything about you.</p></details>
+      <details><summary>When can I buy it?</summary><p>Very soon. Checkout is getting its finishing touches. Until then, try it right here on this page.</p></details>
+    </div>
+  </section>
 
-  // Live demo: rest, you lock it, unlock, paws walk in, caught a paw, unlock, and again. It only runs
-  // while it's on screen, and stays still for people who prefer reduced motion.
-  (() => {
-    const card = document.querySelector('.demo-card');
-    if (!card) return;
-    const q = s => card.querySelector(s);
-    const cap = document.querySelector('.demo-cap');
-    const cursor = q('.d-cursor'), paws = [...card.querySelectorAll('.d-paws svg')], n = q('.dn');
-    const words = {
-      rest: ['Watching for paws', 'Click to lock.', 'It locks by itself when a cat walks on the keys. Lock it yourself to clean or step away.', 'LOCK', '3,118 keys politely ignored'],
-      you: ['Locked by you', 'Paws off.', 'Nothing gets typed until you type “unlock” or click the button.', 'UNLOCK', 'Releases if your Mac locks or sleeps'],
-      paw: ['Locked by a paw', 'Caught a paw.', 'Something walked across your keyboard, so it’s locked now. Type “unlock” or click the button when you’re back.', 'UNLOCK', 'Releases if your Mac locks or sleeps'],
-    };
-    const show = state => {
-      card.classList.remove('rest', 'you', 'paw');
-      card.classList.add(state);
-      const [chip, title, sub, legend, foot] = words[state];
-      q('.ct').textContent = chip; q('.d-title').textContent = title; q('.d-sub').textContent = sub;
-      q('.d-leg').textContent = legend; q('.ft').textContent = foot;
-      q('.fp').style.display = q('.fg').style.display = state === 'rest' ? '' : 'none';
-    };
-    const caption = html => { cap.style.opacity = 0; setTimeout(() => { cap.innerHTML = html; cap.style.opacity = 1; }, 250); };
-    let visible = false, wake = null;
-    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && wake) { wake(); wake = null; } }).observe(card);
-    const wait = ms => new Promise(r => setTimeout(r, ms)).then(() => visible && !document.hidden ? null : new Promise(r => (wake = r)));
-    const count = (to, ms) => { const t0 = performance.now(); const tick = t => { const k = Math.min(1, (t - t0) / ms); n.textContent = Math.round(to * k); if (k < 1) requestAnimationFrame(tick); }; requestAnimationFrame(tick); };
-    const click = async () => {
-      cursor.classList.add('show'); await wait(80); cursor.classList.add('at'); await wait(750);
-      cursor.classList.add('click'); q('.d-key').classList.add('press'); await wait(140);
-      cursor.classList.remove('click'); q('.d-key').classList.remove('press');
-    };
-    const away = async () => { cursor.classList.remove('at'); await wait(500); cursor.classList.remove('show'); };
-    show('rest');
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    (async () => {
-      for (;;) {
-        await wait(2200);
-        await click(); show('you'); n.textContent = '0'; count(18, 2400);
-        caption('<b>Locked for cleaning.</b> Every key is ignored.'); away();
-        await wait(3600);
-        await click(); show('rest'); caption('Click again, and your keyboard is back.'); away();
-        await wait(2400);
-        caption('Then a cat walks onto the keyboard…');
-        for (const p of paws) { p.classList.add('on'); await wait(330); }
-        show('paw'); n.textContent = '0'; count(63, 900);
-        caption('<b>Caught a paw.</b> Paws Off locked it by itself.');
-        await wait(900); paws.forEach(p => p.classList.remove('on'));
-        await wait(3000);
-        await click(); show('rest'); caption('Click once to lock your keyboard.'); away();
+  <section class="final">
+    <img class="icon rv" src="images/icon.png" alt="">
+    <h2 class="rv d1">Keep the paws off your keys.</h2>
+    <div class="ctas rv d2"><button class="buy" aria-disabled="true" title="Checkout opens soon">Get Paws Off for $5.99 <span class="soon"><i></i>Coming soon</span></button></div>
+  </section>
+
+  <footer>© 2026 Polite Owl — a brand of Observant Systems</footer>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Top bar border once you scroll, and gentle reveals as sections come into view.
+  const top = document.querySelector('.top');
+  addEventListener('scroll', () => top.classList.toggle('scrolled', scrollY > 8), { passive: true });
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .15 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  // ---------- Try it: the real panel, and a keyboard that mirrors yours ----------
+  const desk = $('desk'), text = $('noteText'), kb = $('kb');
+  const isMac = !/Win/i.test(navigator.platform || navigator.userAgent);
+  const words = {
+    rest: { chip: () => S.detect ? 'Watching for paws' : 'Paw detection off', title: 'Click to lock.', leg: 'LOCK',
+            sub: () => S.detect ? 'It locks by itself when a cat walks on the keys. Lock it yourself to clean or step away.'
+                                : 'Lock the keyboard to clean it or step away. Your trackpad stays on so you can unlock.' },
+    you:  { chip: () => 'Locked by you', title: 'Paws off.', leg: 'UNLOCK',
+            sub: () => 'Nothing gets typed until ' + (S.endsAt ? 'the timer runs out, or ' : '') + 'you type “unlock” or click the button.' },
+    paw:  { chip: () => 'Locked by a paw', title: 'Caught a paw.', leg: 'UNLOCK',
+            sub: () => 'Something walked across your keyboard, so it’s locked now. Type “unlock” or click the button when you’re back.' },
+  };
+  const S = { locked: false, paw: false, detect: true, timer: 0, endsAt: null, caught: 0, buf: '', held: new Set(), ignored: 0, last: null };
+  let tick = null;
+
+  // The keyboard: [code, legend, width]
+  const L = isMac ? { ctrl: '⌃', alt: '⌥', meta: '⌘' } : { ctrl: 'Ctrl', alt: 'Alt', meta: '⊞' };
+  const rows = [
+    [['Backquote', '`'], ...'1234567890'.split('').map(d => ['Digit' + d, d]), ['Minus', '-'], ['Equal', '='], ['Backspace', '⌫', 1.6]],
+    [['Tab', '⇥', 1.5], ...'QWERTYUIOP'.split('').map(c => ['Key' + c, c]), ['BracketLeft', '['], ['BracketRight', ']'], ['Backslash', '\\', 1.1]],
+    [['CapsLock', '⇪', 1.8], ...'ASDFGHJKL'.split('').map(c => ['Key' + c, c]), ['Semicolon', ';'], ['Quote', "'"], ['Enter', '↩', 1.8]],
+    [['ShiftLeft', '⇧', 2.35], ...'ZXCVBNM'.split('').map(c => ['Key' + c, c]), ['Comma', ','], ['Period', '.'], ['Slash', '/'], ['ShiftRight', '⇧', 2.35]],
+    [['ControlLeft', L.ctrl, 1.25], ['AltLeft', L.alt, 1.25], ['MetaLeft', L.meta, 1.5], ['Space', '', 6.4], ['MetaRight', L.meta, 1.5], ['AltRight', L.alt, 1.25], ['ArrowLeft', '←'], ['ArrowRight', '→']],
+  ];
+  const keyEl = {};
+  rows.forEach(row => {
+    const r = document.createElement('div'); r.className = 'r';
+    row.forEach(([code, label, w = 1]) => {
+      const k = document.createElement('div');
+      k.className = 'k'; k.textContent = label; k.style.flexGrow = w; k.dataset.code = code;
+      r.appendChild(k); keyEl[code] = k;
+    });
+    kb.appendChild(r);
+  });
+  const charFor = code => code.startsWith('Key') ? code.slice(3).toLowerCase() : code.startsWith('Digit') ? code.slice(5)
+    : ({ Space: ' ', Minus: '-', Equal: '=', BracketLeft: '[', BracketRight: ']', Backslash: '\\', Semicolon: ';', Quote: "'", Comma: ',', Period: '.', Slash: '/', Backquote: '`' })[code];
+  const press = (code, on) => { const k = keyEl[code]; if (k) k.classList.toggle('down', on); };
+  const tap = code => { press(code, true); setTimeout(() => press(code, false), 120); };
+
+  function render() {
+    const w = words[S.locked ? (S.paw ? 'paw' : 'you') : 'rest'];
+    desk.classList.toggle('locked', S.locked);
+    desk.classList.toggle('paw', S.locked && S.paw);
+    $('chipText').textContent = w.chip();
+    $('chip').classList.toggle('off', !S.detect && !S.locked);
+    $('chip').disabled = S.locked;
+    $('title').textContent = w.title;
+    $('sub').textContent = w.sub();
+    $('leg').textContent = w.leg;
+    $('key').setAttribute('aria-label', S.locked ? 'Unlock the keyboard' : 'Lock the keyboard');
+    $('pillText').textContent = S.timer ? `For ${S.timer / 60} minutes` : 'Until I unlock';
+    document.querySelectorAll('#menu button').forEach(b => b.classList.toggle('sel', +b.dataset.s === S.timer));
+    let info = `${S.caught} key${S.caught === 1 ? '' : 's'} caught`;
+    if (S.locked && S.endsAt) { const left = Math.max(0, Math.ceil((S.endsAt - Date.now()) / 1000)); info += ` · ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')} left`; }
+    $('info').textContent = info;
+    $('heldText').textContent = S.paw ? 'Caught a paw · type unlock to get your keys back' : 'Locked · type unlock to get your keys back';
+    const foot = $('foot'), fi = $('footIcon');
+    if (S.locked) { foot.textContent = 'Releases if your computer locks or sleeps'; fi.style.display = 'none'; }
+    else if (S.last && Date.now() - S.last.at < 60000) { foot.textContent = `${S.last.paw ? 'Paws caught' : 'All done'} · ${S.last.keys} key${S.last.keys === 1 ? '' : 's'} stopped`; fi.style.display = ''; }
+    else if (S.ignored > 0) { foot.textContent = `${S.ignored.toLocaleString()} key${S.ignored === 1 ? '' : 's'} politely ignored`; fi.style.display = ''; }
+    else { foot.textContent = isMac ? '⌃⌘L locks from anywhere' : 'Ctrl+Alt+L locks from anywhere'; fi.style.display = ''; }
+  }
+
+  function lock(byPaw = false, keys = 0) {
+    if (S.locked) return;
+    S.locked = true; S.paw = byPaw; S.caught = keys; S.buf = ''; S.held.clear();
+    S.endsAt = !byPaw && S.timer ? Date.now() + S.timer * 1000 : null;
+    clearInterval(tick); tick = setInterval(() => { if (S.endsAt && Date.now() >= S.endsAt) unlock(); else render(); }, 500);
+    $('menu').classList.remove('open');
+    render();
+  }
+  function unlock() {
+    if (!S.locked) return;
+    S.last = { keys: S.caught, paw: S.paw, at: Date.now() };
+    S.ignored += S.caught;
+    S.locked = false; S.paw = false; S.endsAt = null; S.buf = '';
+    clearInterval(tick); tick = null;
+    render();
+  }
+  const toggle = () => (S.locked ? unlock() : lock());
+
+  // A blocked key: its letter hops up off the keycap, crossed out.
+  function bounce(code, label) {
+    if (reduce) return;
+    const k = keyEl[code], box = kb.getBoundingClientRect();
+    const b = document.createElement('div');
+    b.className = 'bounce';
+    b.innerHTML = `<s>${(label || '•').replace(/[<&]/g, c => c === '<' ? '&lt;' : '&amp;')}</s>`;
+    if (k) { const r = k.getBoundingClientRect(); b.style.left = r.left - box.left + r.width / 2 - 6 + 'px'; b.style.top = r.top - box.top - 10 + 'px'; }
+    else { b.style.left = '50%'; b.style.top = '10px'; }
+    kb.appendChild(b);
+    setTimeout(() => b.remove(), 820);
+  }
+  // A key press while locked: caught, counted, and it might be part of the unlock word.
+  function caught(code, char) {
+    S.caught++;
+    if (char) { S.buf = (S.buf + char.toLowerCase()).slice(-6); if (S.buf === 'unlock') { unlock(); return; } }
+    bounce(code, char && char.trim() ? char : (keyEl[code] ? keyEl[code].textContent : ''));
+    render();
+  }
+
+  const isShortcut = e => e.key.toLowerCase() === 'l' && e.ctrlKey && (e.metaKey || e.altKey);
+  // Your keyboard drives the demo only while you're typing in the message or using the panel.
+  const inDemo = () => desk.contains(document.activeElement);
+
+  addEventListener('keydown', e => {
+    if (!inDemo()) return;
+    press(e.code, true);
+    if (isShortcut(e)) { e.preventDefault(); toggle(); return; }
+    if (S.locked) {
+      if (['Tab', 'Escape'].includes(e.key)) return;
+      e.preventDefault();
+      if (!e.repeat) caught(e.code, e.key.length === 1 ? e.key : '');
+      return;
+    }
+    if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+    if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter') {
+      S.held.add(e.code);
+      if (S.detect && S.held.size >= 4) { e.preventDefault(); lock(true, S.held.size); }
+    }
+  });
+  addEventListener('keyup', e => { S.held.delete(e.code); press(e.code, false); });
+  addEventListener('blur', () => { S.held.clear(); Object.values(keyEl).forEach(k => k.classList.remove('down')); });
+  text.addEventListener('beforeinput', e => { if (S.locked) e.preventDefault(); });
+
+  // Tapping a key on the drawn keyboard types too (handy on phones).
+  kb.addEventListener('pointerdown', e => {
+    const k = e.target.closest('.k'); if (!k) return;
+    e.preventDefault();
+    const code = k.dataset.code, ch = charFor(code);
+    tap(code);
+    if (S.locked) { caught(code, ch || ''); }
+    else if (code === 'Backspace') { text.value = text.value.slice(0, -1); }
+    else if (code === 'Enter') { text.value += '\n'; }
+    else if (ch !== undefined) { text.value += ch; }
+    text.focus({ preventScroll: true });
+  });
+
+  $('key').addEventListener('click', () => { toggle(); text.focus({ preventScroll: true }); });
+  $('chip').addEventListener('click', () => { S.detect = !S.detect; render(); });
+  $('pill').addEventListener('click', e => { e.stopPropagation(); $('menu').classList.toggle('open'); });
+  document.querySelectorAll('#menu button').forEach(b => b.addEventListener('click', () => { S.timer = +b.dataset.s; $('menu').classList.remove('open'); render(); }));
+  document.addEventListener('click', e => { if (!$('menu').contains(e.target) && !$('pill').contains(e.target)) $('menu').classList.remove('open'); });
+  $('scBtn').addEventListener('click', () => { toggle(); text.focus({ preventScroll: true }); });
+  $('kbdBtn').addEventListener('click', async () => {
+    // Shows what a paw does: four keys go down at once.
+    text.focus({ preventScroll: true });
+    const four = ['KeyJ', 'KeyK', 'KeyL', 'Semicolon'];
+    for (const c of four) { press(c, true); await sleep(reduce ? 0 : 90); }
+    if (!S.locked && S.detect) lock(true, 4); else if (S.locked) four.forEach(c => caught(c, charFor(c)));
+    await sleep(500); four.forEach(c => press(c, false));
+  });
+
+  // A cat strolls across the keys. With paw detection on, Paws Off catches it after a few steps.
+  let walking = false;
+  $('catBtn').addEventListener('click', async () => {
+    if (walking) return;
+    walking = true;
+    if (S.locked) unlock();
+    const walk = $('walk'); walk.innerHTML = '';
+    const path = [['KeyA', 'KeyS'], ['KeyE', 'KeyR'], ['KeyD', 'KeyF', 'KeyG'], ['KeyT', 'KeyY'], ['KeyH', 'KeyJ'], ['KeyU', 'KeyI'], ['KeyK', 'KeyL', 'Semicolon'], ['KeyO', 'KeyP'], ['Quote', 'Enter']];
+    const box = kb.getBoundingClientRect();
+    let out = text.value;
+    for (const [i, step] of path.entries()) {
+      const r = keyEl[step[0]].getBoundingClientRect();
+      const p = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      p.innerHTML = '<use href="#paw"/>';
+      p.style.left = r.left - box.left + r.width * .4 + 'px';
+      p.style.top = r.top - box.top - 4 + 'px';
+      p.style.setProperty('--r', (i % 2 ? 20 : 4) + 'deg');
+      walk.appendChild(p);
+      requestAnimationFrame(() => p.classList.add('on'));
+      step.forEach(c => press(c, true));
+      if (!S.locked) {
+        out += step.map(charFor).join('') + (i % 3 === 2 ? ' ' : ''); text.value = out; text.scrollTop = 1e6;
+        if (S.detect && i === 2) { await sleep(110); lock(true, 7); }
+      } else { step.forEach(c => caught(c, charFor(c))); }
+      await sleep(reduce ? 60 : 240);
+      step.forEach(c => press(c, false));
+    }
+    await sleep(900);
+    [...walk.children].forEach(p => p.classList.remove('on'));
+    setTimeout(() => (walk.innerHTML = ''), 400);
+    walking = false;
+  });
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  if (!isMac) document.querySelectorAll('#scBtn kbd').forEach(k => (k.textContent = 'Ctrl+Alt+L'));
+  render();
+
+  // ---------- Section visuals: each plays when it comes into view ----------
+  const whenSeen = (el, fn) => { if (!el) return; new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); fn(); } }, { threshold: .4 }).observe(el); };
+
+  // Paw detection: a cat types into the email, then the stamp lands.
+  whenSeen($('pawVis'), async () => {
+    const mash = $('mash'), stamp = $('stamp'), trail = $('trail');
+    const spots = [[8, 78, -24], [16, 62, -14], [28, 70, -24], [36, 52, -14], [72, 30, 18], [80, 14, 26], [88, 22, 18]];
+    trail.innerHTML = spots.map(([x, y, r]) => `<svg style="left:${x}%;top:${y}%;transform:rotate(${r}deg)"><use href="#paw"/></svg>`).join('');
+    const prints = [...trail.children];
+    for (;;) {
+      mash.textContent = ''; stamp.classList.remove('on');
+      for (const [i, ch] of [...'jjjjjjj;;;;;; fffff mrrrp'].entries()) {
+        mash.textContent += ch;
+        if (i % 4 === 0 && prints[i / 4]) prints[i / 4].classList.add('on');
+        await sleep(reduce ? 0 : 70);
       }
-    })();
-  })();
+      await sleep(250); stamp.classList.add('on');
+      await sleep(3200); prints.forEach(p => p.classList.remove('on'));
+      if (reduce) return;
+      await sleep(900);
+    }
+  });
+
+  // Unlock word: the keys press one by one, then it lets go.
+  whenSeen($('word'), async () => {
+    const keys = [...$('word').children], cap = $('wordcap');
+    for (;;) {
+      $('word').classList.remove('done'); cap.textContent = 'Locked. Type your word…';
+      for (const k of keys) { k.classList.add('down'); await sleep(140); k.classList.remove('down'); await sleep(reduce ? 0 : 200); }
+      $('word').classList.add('done'); cap.textContent = 'Unlocked. Welcome back.';
+      if (reduce) return;
+      await sleep(2600);
+    }
+  });
+
+  // Timer: two minutes, sped up.
+  whenSeen($('arc'), () => {
+    const arc = $('arc'), t = $('clockT'), full = 326.7;
+    let s = 120;
+    const step = () => {
+      s = s <= 0 ? 120 : s - 4;
+      arc.style.strokeDashoffset = String(full * (1 - s / 120));
+      t.textContent = s <= 0 ? 'Back!' : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    };
+    if (!reduce) setInterval(step, 250);
+  });
+
+  // Never locks you out: each event lights up in turn.
+  whenSeen($('events'), async () => {
+    const evs = [...$('events').children];
+    for (;;) {
+      for (const ev of evs) { ev.classList.add('on'); await sleep(reduce ? 0 : 700); }
+      if (reduce) return;
+      await sleep(2200); evs.forEach(ev => ev.classList.remove('on')); await sleep(600);
+    }
+  });
+})();
 </script>
 </body>
 </html>
