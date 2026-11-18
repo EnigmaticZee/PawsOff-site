@@ -329,6 +329,73 @@
     .kb .r { gap: 3px; } .kb .r + .r { margin-top: 3px; }
     .k { height: 30px; border-radius: 6px; font-size: 10px; }
   }
+
+  /* Why buy: "you could build it yourself" vs. Paws Off */
+  .vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: stretch; max-width: 940px; margin: 0 auto; }
+  .path { background: var(--surface); border: 1px solid var(--line); border-radius: 26px; overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 24px 50px -34px rgba(60, 40, 20, .45); }
+  .path.mine { box-shadow: 0 0 0 2px var(--coral-ui), 0 30px 60px -34px rgba(60, 40, 20, .5); }
+  .stage { position: relative; height: 230px; overflow: hidden; cursor: pointer; }
+  .stage-tag { position: absolute; top: 12px; right: 12px; z-index: 3; font-size: 11.5px; font-weight: 700; color: var(--faint);
+    background: color-mix(in srgb, var(--surface) 80%, transparent); padding: 4px 9px; border-radius: 999px; }
+  .vs-or { align-self: center; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--surface);
+    border: 1px solid var(--line); font: 800 14px/1 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; color: var(--soft); }
+  .pbody { padding: 22px 24px 24px; }
+  .kicker { margin: 0 0 8px; font-size: 12px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--faint); }
+  .mine .kicker { color: var(--coral-ui); }
+  .pbody h3 { margin: 0 0 12px; font: 800 21px/1.2 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; }
+  .ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 15px; color: var(--soft); }
+  .ticks li { display: flex; gap: 9px; align-items: flex-start; }
+  .ticks li::before { content: ""; flex: none; width: 16px; height: 16px; margin-top: 3px; border-radius: 50%; }
+  .ticks.diy li::before { background: var(--line); box-shadow: inset 0 0 0 4px var(--surface); border: 1.5px solid var(--faint); width: 13px; height: 13px; }
+  .ticks.ok li::before { background: var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.3l2.3 2.3 4.7-4.9' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat; }
+
+  /* the do-it-yourself bench: prompts pile up, tokens tick over, a paw sneaks through */
+  .diy .stage { background: linear-gradient(var(--line) 1px, transparent 1px) 0 0/22px 22px, linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/22px 22px,
+    color-mix(in srgb, var(--bg) 70%, var(--surface)); }
+  .meter { position: absolute; left: 16px; top: 14px; z-index: 2; display: flex; flex-direction: column; gap: 2px; }
+  .meter span { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+  .meter b { font: 800 22px/1 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; font-variant-numeric: tabular-nums; color: var(--ink); }
+  .diy.jolt .meter b { animation: bump .45s cubic-bezier(.3, 1.6, .5, 1); }
+  @keyframes bump { 40% { transform: scale(1.12); color: var(--coral-ui); } }
+  .prompts { list-style: none; margin: 0; padding: 0 16px; position: absolute; left: 0; right: 0; bottom: 16px; display: flex; flex-direction: column; gap: 7px; align-items: flex-end; }
+  .prompts li { max-width: 86%; padding: 8px 12px; border-radius: 14px 14px 4px 14px; background: var(--ink); color: var(--bg); font-size: 13.5px; font-weight: 600;
+    animation: promptIn .45s cubic-bezier(.2, .9, .3, 1.2) backwards; transition: opacity .35s, transform .35s; }
+  .prompts li.reply { align-self: flex-start; border-radius: 14px 14px 14px 4px; background: var(--surface); color: var(--soft); border: 1px solid var(--line); }
+  .prompts li.out { opacity: 0; transform: translateY(-14px) scale(.96); }
+  @keyframes promptIn { from { opacity: 0; transform: translateY(14px) scale(.96); } }
+  .sneak { position: absolute; width: 26px; height: 26px; color: var(--coral-ui); opacity: 0; z-index: 2; }
+  .diy.paw .sneak { animation: sneak 1.6s ease-in-out; }
+  @keyframes sneak { 0% { opacity: 0; transform: translate(0, 0) rotate(-20deg); } 15%, 75% { opacity: .9; } 100% { opacity: 0; transform: translate(140px, -40px) rotate(15deg); } }
+
+  /* the Paws Off way: the key goes down, everything's already done */
+  .mine .stage { display: grid; place-items: center; background: radial-gradient(120% 110% at 50% 100%, var(--teal-soft), transparent 70%), color-mix(in srgb, var(--bg) 60%, var(--surface)); }
+  .cap { position: relative; width: 112px; height: 112px; border-radius: 26px; background: linear-gradient(#fffdf9, #f0e9de); border: 1px solid #ddd2c2;
+    box-shadow: 0 9px 0 #cfc3b0, 0 22px 30px -12px rgba(60, 40, 20, .45); display: grid; place-items: center; transition: transform .35s cubic-bezier(.3, 1.5, .5, 1), box-shadow .35s; }
+  @media (prefers-color-scheme: dark) { .cap { background: linear-gradient(#3a3632, #2a2724); border-color: #0f0e0c; box-shadow: 0 9px 0 #0a0908, 0 22px 30px -12px rgba(0, 0, 0, .8); } }
+  .cap::before { content: "LOCK"; position: absolute; top: 12px; left: 14px; font-size: 9.5px; font-weight: 900; letter-spacing: .14em; color: #a0958a; }
+  .cap svg { width: 44px; height: 44px; color: var(--ink); transition: color .3s; }
+  .cap i { position: absolute; top: 13px; right: 13px; width: 7px; height: 7px; border-radius: 50%; background: transparent; transition: background .3s, box-shadow .3s; }
+  .mine.locked .cap { transform: translateY(7px); box-shadow: 0 2px 0 #cfc3b0, 0 10px 18px -10px rgba(60, 40, 20, .45); }
+  @media (prefers-color-scheme: dark) { .mine.locked .cap { box-shadow: 0 2px 0 #0a0908, 0 10px 18px -10px rgba(0, 0, 0, .8); } }
+  .mine.locked .cap::before { content: "UNLOCK"; }
+  .cap .when-locked, .mine.locked .cap .at-rest { display: none; }
+  .mine.locked .cap .when-locked { display: block; color: var(--teal); }
+  .mine.locked .cap i { background: var(--teal); box-shadow: 0 0 10px var(--teal); }
+  .chips { position: absolute; left: 0; right: 0; bottom: 14px; display: flex; justify-content: center; gap: 7px; flex-wrap: wrap; padding: 0 14px; }
+  .chips span { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: var(--soft);
+    opacity: 0; transform: translateY(8px) scale(.95); transition: opacity .4s, transform .45s cubic-bezier(.3, 1.5, .5, 1); }
+  .mine.locked .chips span { opacity: 1; transform: none; }
+  .mine.locked .chips span:nth-child(2) { transition-delay: .15s; } .mine.locked .chips span:nth-child(3) { transition-delay: .3s; }
+  .why-foot { max-width: 940px; margin: 26px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px;
+    padding: 12px 12px 12px 28px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+  .why-foot p { margin: 0; font: 800 19px/1.3 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; }
+  @media (max-width: 760px) {
+    .vs { grid-template-columns: 1fr; }
+    .vs-or { justify-self: center; margin: -4px 0; }
+    .why-foot { border-radius: 22px; padding: 20px; }
+    .why-foot .buy { width: 100%; }
+  }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .rv { opacity: 1; transform: none; }
@@ -539,6 +606,57 @@
         <source media="(prefers-color-scheme: dark)" srcset="media/settings-dark.png">
         <img src="media/settings-light.png" alt="Paws Off settings: appearance, unlock phrase, paw detection, updates and paw stats" width="864" height="1148" loading="lazy">
       </picture>
+    </div>
+  </section>
+
+  <!-- Price -->
+  <!-- Why buy it: you could build a keyboard blocker yourself... -->
+  <section id="why">
+    <h2 class="center rv">Sure, you could build it yourself.</h2>
+    <p class="sub center rv d1">Anyone can ask for a keyboard blocker these days. Making one that never locks you out, and keeps working after every update, is the part that eats your evenings.</p>
+    <div class="vs">
+      <article class="path diy rv d1" id="diy">
+        <div class="stage" id="diyStage" role="button" tabindex="0" aria-label="Try another prompt">
+          <span class="stage-tag" id="diyTag">Click to try again</span>
+          <div class="meter" aria-hidden="true"><span>Tokens spent</span><b id="tokens">18,240</b></div>
+          <svg class="sneak" style="left:22px;bottom:60px" aria-hidden="true"><use href="#paw"/></svg>
+          <ol class="prompts" id="prompts" aria-hidden="true">
+            <li>Make me an app that blocks my keyboard</li>
+            <li class="reply">Done! Press Enter to test.</li>
+            <li>I can't type my password now</li>
+          </ol>
+        </div>
+        <div class="pbody">
+          <p class="kicker">Build it yourself</p>
+          <h3>Doable, with time and tokens</h3>
+          <ul class="ticks diy">
+            <li>Prompting, testing, re-prompting</li>
+            <li>Permissions, sleep and lock screens: all yours to handle</li>
+            <li>Every Mac and Windows update, yours to fix</li>
+          </ul>
+        </div>
+      </article>
+      <div class="vs-or rv d2" aria-hidden="true">or</div>
+      <article class="path mine rv d2" id="mine">
+        <div class="stage" id="mineStage" role="button" tabindex="0" aria-label="Lock the key">
+          <span class="stage-tag" id="mineTag">Click to lock</span>
+          <div class="cap" aria-hidden="true"><i></i><svg class="at-rest"><use href="#paw"/></svg><svg class="when-locked"><use href="#lock"/></svg></div>
+          <div class="chips" aria-hidden="true"><span>Paw detection</span><span>Never locks you out</span><span>Notarized</span></div>
+        </div>
+        <div class="pbody">
+          <p class="kicker">Get Paws Off</p>
+          <h3>One click. It just works.</h3>
+          <ul class="ticks ok">
+            <li>Paw detection, timers and an unlock word, ready to go</li>
+            <li>Lets go of the keyboard when your computer locks or sleeps</li>
+            <li>Signed, notarized and kept up to date for you</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+    <div class="why-foot rv d3">
+      <p>Keep your evenings for the things you actually wanted to do.</p>
+      <a class="buy" href="https://checkout.dodopayments.com/buy/pdt_0NsBmFAsIXP3anSN6yEfi?quantity=1&amp;redirect_url=https%3A%2F%2Ftrypawsoff.app%2Fdownload%2F">Get Paws Off for $3.99</a>
     </div>
   </section>
 
@@ -844,6 +962,44 @@
       await sleep(2200); evs.forEach(ev => ev.classList.remove('on')); await sleep(600);
     }
   });
+
+  // Why buy it: the do-it-yourself bench keeps prompting; the Paws Off key just locks.
+  {
+    const diy = $('diy'), list = $('prompts'), num = $('tokens'), mine = $('mine');
+    const verb = matchMedia('(hover: none)').matches ? 'Tap' : 'Click';
+    $('diyTag').textContent = verb + ' to try again';
+    const lines = [['The cat still got through'], ['Now it ignores the trackpad too', 'reply:Good catch! Here is a fixed version.'],
+      ['It locked me out after sleep'], ['Accessibility permission, again?'], ['It worked yesterday…'], ['Please just fix it', 'reply:Sure! Rewriting from scratch.'], ['OK, start over']];
+    let next = 0, tokens = 18240, shown = tokens, seen = false;
+    const fmt = n => Math.round(n).toLocaleString('en-US');
+    const add = text => {
+      const li = document.createElement('li');
+      if (text.startsWith('reply:')) { li.className = 'reply'; text = text.slice(6); }
+      li.textContent = text; list.appendChild(li);
+      const live = [...list.children].filter(x => !x.classList.contains('out'));
+      if (live.length > 3) { const old = live[0]; old.classList.add('out'); setTimeout(() => old.remove(), reduce ? 0 : 380); }
+    };
+    const prompt = big => {
+      lines[next++ % lines.length].forEach((t, i) => setTimeout(() => add(t), i * 700));
+      tokens += big ? 3800 + Math.random() * 2600 : 600 + Math.random() * 1800;
+      diy.classList.remove('jolt'); void diy.offsetWidth; diy.classList.add('jolt');
+      if (next % 3 === 0) { diy.classList.remove('paw'); void diy.offsetWidth; diy.classList.add('paw'); }
+      if (reduce) num.textContent = fmt(shown = tokens);
+    };
+    const tick = () => {
+      if (Math.abs(tokens - shown) > .5) { shown += (tokens - shown) * .12; num.textContent = fmt(shown); }
+      requestAnimationFrame(tick);
+    };
+    if (!reduce) requestAnimationFrame(tick);
+    const press = (el, fn) => { el.addEventListener('click', fn); el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } }); };
+    press($('diyStage'), () => prompt(true));
+    new IntersectionObserver(([e]) => { seen = e.isIntersecting; }).observe(diy);
+    if (!reduce) setInterval(() => { if (seen && !document.hidden) prompt(false); }, 2600);
+
+    const lock = on => { mine.classList.toggle('locked', on); $('mineTag').textContent = verb + (on ? ' to unlock' : ' to lock'); $('mineStage').setAttribute('aria-label', on ? 'Unlock the key' : 'Lock the key'); };
+    press($('mineStage'), () => lock(!mine.classList.contains('locked')));
+    whenSeen(mine, () => setTimeout(() => lock(true), reduce ? 0 : 600));
+  }
 })();
 </script>
 </body>
