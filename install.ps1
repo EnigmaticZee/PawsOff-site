@@ -1,5 +1,5 @@
-# Installs Paws Off (https://enigmaticzee.github.io/PawsOff-site/) on Windows and starts it.
-#   irm https://enigmaticzee.github.io/PawsOff-site/install.ps1 | iex
+# Installs Paws Off (https://trypawsoff.app/) on Windows and starts it.
+#   irm https://trypawsoff.app/install.ps1 | iex
 # It downloads the latest release's installer from GitHub and runs it quietly. It installs just for
 # you (no admin rights) and starts Paws Off when it's done. Uninstall any time from Settings > Apps.
 $ErrorActionPreference = 'Stop'

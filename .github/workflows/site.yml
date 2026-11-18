@@ -1,6 +1,6 @@
 name: Site
 # Publishes the website and the one-line installers to GitHub Pages:
-# https://enigmaticzee.github.io/PawsOff-site/
+# https://trypawsoff.app/
 on:
   push:
     branches: [main]

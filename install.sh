@@ -1,6 +1,6 @@
 #!/bin/bash
-# Installs Paws Off (https://enigmaticzee.github.io/PawsOff-site/) on a Mac and opens it.
-#   curl -fsSL https://enigmaticzee.github.io/PawsOff-site/install.sh | bash
+# Installs Paws Off (https://trypawsoff.app/) on a Mac and opens it.
+#   curl -fsSL https://trypawsoff.app/install.sh | bash
 # It downloads the latest release's DMG from GitHub, copies "Paws Off.app" into /Applications
 # (or ~/Applications if that isn't writable), and opens it. Files downloaded with curl aren't
 # marked "downloaded from the internet", so macOS opens the app without asking first.

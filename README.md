@@ -1,6 +1,6 @@
 # Paws Off website
 
-The website for Paws Off, live at https://enigmaticzee.github.io/PawsOff-site/.
+The website for Paws Off, live at https://trypawsoff.app/.
 
 | Files | What they are |
 | --- | --- |
