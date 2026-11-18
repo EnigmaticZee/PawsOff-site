@@ -44,17 +44,13 @@
   nav .links a { color: var(--soft); font-size: 15px; font-weight: 600; }
   nav .links a:hover { color: var(--ink); text-decoration: none; }
 
-  /* The buy button, before checkout opens */
-  .buy { position: relative; display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 8px 0 20px; border-radius: 999px; border: 0;
-    background: var(--ink); color: var(--bg); font: 700 16px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; cursor: default;
-    box-shadow: 0 10px 24px -12px rgba(42, 38, 33, .6); }
-  .buy .soon { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px; border-radius: 999px; background: rgba(255, 255, 255, .14);
-    font-size: 12.5px; font-weight: 800; letter-spacing: .02em; }
-  @media (prefers-color-scheme: dark) { .buy .soon { background: rgba(0, 0, 0, .1); } }
-  .buy .soon i { width: 7px; height: 7px; border-radius: 50%; background: var(--coral-ui); animation: pulse 2.2s ease-in-out infinite; }
-  .buy.small { height: 38px; font-size: 14px; padding-left: 15px; padding-right: 5px; }
-  .buy.small .soon { height: 28px; font-size: 11.5px; }
-  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.75); } }
+  /* The buy button: opens Dodo's checkout */
+  .buy { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 46px; padding: 0 24px; border-radius: 999px; border: 0;
+    background: var(--ink); color: var(--bg); font: 700 16px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; cursor: pointer;
+    box-shadow: 0 10px 24px -12px rgba(42, 38, 33, .6); transition: transform .15s; }
+  .buy:hover { text-decoration: none; transform: translateY(-1px); }
+  .buy.small { height: 38px; font-size: 14px; padding: 0 17px; }
+  nav .buy.small { margin-left: auto; } /* stays on the right when the links are hidden (small screens) */
   .ghost { display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 20px; border-radius: 999px; background: var(--surface);
     border: 1px solid var(--line); color: var(--ink); font-weight: 700; font-size: 16px; }
   .ghost:hover { text-decoration: none; border-color: color-mix(in srgb, var(--ink) 25%, transparent); }
@@ -364,8 +360,8 @@
   <div class="wrap">
     <nav>
       <a class="brand" href="#"><img src="images/icon.png" alt="">Paws Off</a>
-      <div class="links"><a href="#try">Try it</a><a href="#features">Features</a><a href="#privacy">Privacy</a><a href="#buy">Price</a><a href="#faq">FAQ</a></div>
-      <button class="buy small" aria-disabled="true" title="Checkout opens soon">$5.99 <span class="soon"><i></i>Coming soon</span></button>
+      <div class="links"><a href="#try">Try it</a><a href="#features">Features</a><a href="#privacy">Privacy</a><a href="#buy">Price</a><a href="#faq">FAQ</a><a href="download/">Download</a></div>
+      <a class="buy small" href="https://checkout.dodopayments.com/buy/pdt_0NsBmFAsIXP3anSN6yEfi?quantity=1&amp;redirect_url=https%3A%2F%2Fenigmaticzee.github.io%2FPawsOff-site%2Fdownload%2F">Buy · $5.99</a>
     </nav>
   </div>
 </div>
@@ -376,7 +372,7 @@
     <h1 class="rv d1">Pause your keyboard<br>with <span class="hl">one click</span>.</h1>
     <p class="lede rv d2">Wipe it down without typing gibberish, or step away without your cat writing your emails. For Mac and Windows.</p>
     <div class="ctas rv d3">
-      <button class="buy" aria-disabled="true" title="Checkout opens soon"><span class="label-long">Get Paws Off for</span> $5.99 <span class="soon"><i></i>Coming soon</span></button>
+      <a class="buy" href="https://checkout.dodopayments.com/buy/pdt_0NsBmFAsIXP3anSN6yEfi?quantity=1&amp;redirect_url=https%3A%2F%2Fenigmaticzee.github.io%2FPawsOff-site%2Fdownload%2F"><span class="label-long">Get Paws Off for</span> $5.99</a>
     </div>
     <ul class="facts rv d3">
       <li><svg><use href="#mac"/></svg>macOS 14 or later</li>
@@ -530,7 +526,7 @@
         <ul>
           <li><svg><use href="#check"/></svg><strong>Nothing you type is stored or sent.</strong> While locked it remembers only the last few characters, just enough to spot your unlock word, and forgets them on unlock.</li>
           <li><svg><use href="#check"/></svg><strong>Paw detection counts keys, never reads them.</strong> It only looks at how many keys are held, and for how long.</li>
-          <li><svg><use href="#check"/></svg><strong>Nothing about you leaves your computer.</strong> No account, no tracking, no analytics, and what you type is never recorded. Updates are off until you switch them on. Once a week Paws Off downloads a public list of cancelled licence keys; it never sends your key or anything about you.</li>
+          <li><svg><use href="#check"/></svg><strong>Nothing about you leaves your computer.</strong> No account, no tracking, no analytics, and what you type is never recorded. Updates are off until you switch them on. Once a week Paws Off checks that your licence is still valid with Dodo Payments, our checkout. Only the key is sent, nothing about you.</li>
           <li><svg><use href="#check"/></svg><strong>Notarized by Apple.</strong> Apple checks every Mac release before you download it, and macOS checks again when you open it.</li>
         </ul>
       </div>
@@ -556,8 +552,8 @@
         <li><svg><use href="#check"/></svg>Works offline</li>
         <li><svg><use href="#check"/></svg>No account needed</li>
       </ul>
-      <button class="buy" aria-disabled="true" title="Checkout opens soon">Get Paws Off for $5.99 <span class="soon"><i></i>Coming soon</span></button>
-      <p class="fine">Checkout opens soon. Your licence key arrives by email the moment you buy.<br>macOS 14+ (Apple Silicon and Intel) · Windows 10 &amp; 11</p>
+      <a class="buy" href="https://checkout.dodopayments.com/buy/pdt_0NsBmFAsIXP3anSN6yEfi?quantity=1&amp;redirect_url=https%3A%2F%2Fenigmaticzee.github.io%2FPawsOff-site%2Fdownload%2F">Get Paws Off for $5.99</a>
+      <p class="fine">Your licence key and download link arrive by email the moment you buy.<br>macOS 14+ (Apple Silicon and Intel) · Windows 10 &amp; 11<br>Already bought? <a href="download/">Download Paws Off</a></p>
     </div>
   </section>
 
@@ -570,15 +566,15 @@
       <details><summary>How does paw detection know it's a cat?</summary><p>People rarely hold four keys at once, or two keys for three seconds. Paws do it all the time. Paws Off counts held keys and locks when it sees that pattern. You can switch it off in one click.</p></details>
       <details><summary>Does it work on Windows?</summary><p>Yes. The same app runs in your system tray on Windows 10 and 11, with Ctrl+Alt+L as the shortcut.</p></details>
       <details><summary>How many computers can I use it on?</summary><p>All of yours. One purchase, any number of your Macs and PCs.</p></details>
-      <details><summary>Does it need the internet?</summary><p>No. Paws Off works completely offline. It only goes online to check for updates if you switch that on, and once a week to check that your licence key hasn't been cancelled. It never sends anything about you.</p></details>
-      <details><summary>When can I buy it?</summary><p>Very soon. Checkout is getting its finishing touches. Until then, try it right here on this page.</p></details>
+      <details><summary>Does it need the internet?</summary><p>Just once, to activate your licence key. After that Paws Off works completely offline. It only goes online to check for updates if you switch that on, and once a week to check that your licence is still valid. It never sends anything about you.</p></details>
+      <details><summary>I bought it. Where's my download?</summary><p>Your purchase email has your licence key and a download link. You can also <a href="download/">download Paws Off here</a> any time, and find your key in <a href="https://customer.dodopayments.com/login/bus_0Nr7EhxbVIvQN6h1BKNM8">My purchases</a>.</p></details>
     </div>
   </section>
 
   <section class="final">
     <img class="icon rv" src="images/icon.png" alt="">
     <h2 class="rv d1">Keep the paws off your keys.</h2>
-    <div class="ctas rv d2"><button class="buy" aria-disabled="true" title="Checkout opens soon">Get Paws Off for $5.99 <span class="soon"><i></i>Coming soon</span></button></div>
+    <div class="ctas rv d2"><a class="buy" href="https://checkout.dodopayments.com/buy/pdt_0NsBmFAsIXP3anSN6yEfi?quantity=1&amp;redirect_url=https%3A%2F%2Fenigmaticzee.github.io%2FPawsOff-site%2Fdownload%2F">Get Paws Off for $5.99</a></div>
   </section>
 
   <footer>© 2026 Polite Owl — a brand of Observant Systems</footer>

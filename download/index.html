@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Download Paws Off</title>
+<meta name="description" content="Download Paws Off for Mac or Windows, then paste the licence key from your purchase email.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="../images/icon.png">
+<script>
+  // Dodo adds details about the purchase (and the licence key) to this address after checkout.
+  // Read whether it was a purchase, then drop them from the address bar and history straight away,
+  // so the key is never bookmarked, shared or kept. Nothing here is sent anywhere.
+  (function () {
+    var q = new URLSearchParams(location.search);
+    window.justBought = q.has("payment_id") || q.get("status") === "succeeded" || q.get("status") === "active";
+    if (location.search) history.replaceState(null, "", location.pathname + location.hash);
+  })();
+</script>
+<style>
+  :root {
+    --bg: #f6f2ec; --surface: #ffffff; --ink: #2a2621; --soft: #6f675d; --faint: #9a9186; --line: rgba(42, 38, 33, .09);
+    --coral: #e8573f; --coral-ui: #e8704f; --coral-soft: rgba(232, 112, 79, .12); --teal: #2aa68f; --teal-soft: rgba(42, 166, 143, .12);
+    --shadow: 0 30px 70px -30px rgba(60, 40, 20, .35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151311; --surface: #211e1a; --ink: #f3ece1; --soft: #a69d90; --faint: #7d756b; --line: rgba(255, 255, 255, .09);
+      --coral: #ff8a72; --coral-ui: #ff8a5c; --coral-soft: rgba(255, 138, 92, .14); --teal: #4fd6b8; --teal-soft: rgba(79, 214, 184, .13);
+      --shadow: 0 30px 70px -30px rgba(0, 0, 0, .8); }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  h1, h2, .brand { font-family: ui-rounded, "SF Pro Rounded", -apple-system, "Segoe UI", system-ui, sans-serif; letter-spacing: -.015em; }
+  a { color: var(--coral); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  svg.i { width: 1em; height: 1em; flex: none; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  nav { display: flex; align-items: center; height: 62px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--ink); }
+  .brand img { width: 28px; height: 28px; }
+  .brand:hover { text-decoration: none; }
+
+  main { max-width: 620px; margin: 0 auto; padding: 36px 20px 24px; text-align: center; }
+  .chip { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 999px; background: var(--teal-soft);
+    color: var(--teal); font-weight: 700; font-size: 14px; }
+  h1 { font-size: clamp(34px, 6vw, 48px); line-height: 1.08; margin: 18px 0 10px; font-weight: 900; text-wrap: balance; }
+  .lead, .help { text-wrap: balance; }
+  .lead { color: var(--soft); font-size: 18px; margin: 0 auto 28px; max-width: 480px; }
+  .lead b { color: var(--ink); }
+
+  .dl { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 52px; padding: 0 24px; border-radius: 999px;
+    font-weight: 700; font-size: 16px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); min-width: 230px; }
+  .btn:hover { text-decoration: none; border-color: color-mix(in srgb, var(--ink) 25%, transparent); }
+  .btn.main { background: var(--ink); color: var(--bg); border-color: transparent; box-shadow: 0 10px 24px -12px rgba(42, 38, 33, .6); }
+  .btn svg { width: 20px; height: 20px; }
+  .note { color: var(--faint); font-size: 14px; margin: 14px 0 0; min-height: 1.5em; }
+
+  .steps { list-style: none; padding: 0; margin: 40px 0 0; text-align: left; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 24px; box-shadow: var(--shadow); overflow: hidden; }
+  .steps li { display: flex; gap: 16px; padding: 18px 22px; border-top: 1px solid var(--line); }
+  .steps li:first-child { border-top: 0; }
+  .steps .n { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--coral-soft);
+    color: var(--coral-ui); font-weight: 800; font-size: 14px; }
+  .steps b { display: block; }
+  .steps span { color: var(--soft); font-size: 15px; }
+
+  .help { margin: 28px 0 0; color: var(--soft); font-size: 15px; }
+  footer { text-align: center; color: var(--soft); font-size: 14px; padding: 40px 0 48px; }
+  @media (max-width: 520px) { .btn { width: 100%; min-width: 0; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="win" viewBox="0 0 24 24"><g fill="currentColor"><path d="M3 5.3l7.5-1v7.2H3zM11.5 4.1L21 2.8v8.7h-9.5zM3 12.5h7.5v7.2l-7.5-1zM11.5 12.5H21v8.7l-9.5-1.3z"/></g></symbol>
+  <symbol id="mac" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8 20h8M12 16.5V20"/></g></symbol>
+  <symbol id="check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</defs></svg>
+
+<div class="wrap"><nav><a class="brand" href="../"><img src="../images/icon.png" alt="">Paws Off</a></nav></div>
+
+<main>
+  <span class="chip" id="chip" hidden><svg class="i"><use href="#check"/></svg>Payment received</span>
+  <h1 id="title">Download Paws Off</h1>
+  <p class="lead" id="lead">Install it, then paste the <b>licence key from your purchase email</b>.</p>
+
+  <div class="dl">
+    <a class="btn" id="get-mac" href="https://github.com/EnigmaticZee/PawsOff-site/releases/latest/download/PawsOff-mac.dmg"><svg><use href="#mac"/></svg>Download for Mac</a>
+    <a class="btn" id="get-win" href="https://github.com/EnigmaticZee/PawsOff-site/releases/latest/download/PawsOff-Windows-Setup.exe"><svg><use href="#win"/></svg>Download for Windows</a>
+  </div>
+  <p class="note" id="note">macOS 14 or later · Windows 10 and 11 · always the newest version</p>
+
+  <ol class="steps">
+    <li><span class="n">1</span><div><b>Install</b><span id="install">Mac: open the download and drag Paws Off into Applications. Windows: open the installer and click through. If SmartScreen appears, click More info → Run anyway.</span></div></li>
+    <li><span class="n">2</span><div><b>Paste your licence key</b><span>Open Paws Off, paste the key from your purchase email and click Activate. It needs the internet just this once.</span></div></li>
+    <li><span class="n">3</span><div><b>Mac only: Grant Access</b><span>Click Grant Access once, so Paws Off can pause your keyboard. Then look for the 🐾 in your menu bar.</span></div></li>
+  </ol>
+
+  <p class="help">Can't find the email? Check your spam folder, or find your key in <a id="portal" href="https://customer.dodopayments.com/login/bus_0Nr7EhxbVIvQN6h1BKNM8">My purchases</a>.<br>One key works on all your computers.</p>
+</main>
+
+<footer>© 2026 Polite Owl — a brand of Observant Systems</footer>
+
+<script>
+  (function () {
+    var ua = navigator.userAgent;
+    var touchMac = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1; // an iPad asking for the desktop site
+    var os = /Windows/.test(ua) ? "win" : (/Macintosh/.test(ua) && !touchMac) ? "mac" : null;
+
+    if (window.justBought) {
+      document.getElementById("chip").hidden = false;
+      document.getElementById("title").textContent = "Thanks for buying Paws Off!";
+    }
+    if (!os) {
+      document.getElementById("note").textContent = "Paws Off is for Mac and Windows. Open this page on your computer to download it.";
+      return;
+    }
+    // Put this computer's download first and start it, once.
+    var mine = document.getElementById("get-" + os), other = document.getElementById(os === "mac" ? "get-win" : "get-mac");
+    mine.classList.add("main");
+    mine.parentNode.insertBefore(mine, other);
+    var name = os === "mac" ? "Mac" : "Windows";
+    document.getElementById("note").innerHTML = "Your download for " + name + " is starting… Didn't start? <a href=\"" + mine.href + "\">Click here</a>.";
+    setTimeout(function () { location.href = mine.href; }, 700);
+  })();
+</script>
+</body>
+</html>
